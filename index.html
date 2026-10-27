@@ -10,25 +10,23 @@
 :root{--bg:#0d1117;--card:#161b22;--line:#262c36;--text:#e6edf3;--muted:#8b949e;--accent:#ffd21f;--red:#f87171;--green:#4ade80}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,system-ui,sans-serif;font-size:15px}
-header{position:sticky;top:0;z-index:20;display:flex;align-items:center;justify-content:space-between;padding:14px 16px;background:rgba(13,17,23,.95);backdrop-filter:blur(10px);border-bottom:1px solid var(--line);height:69px}
+header{position:sticky;top:0;z-index:20;display:flex;align-items:center;justify-content:space-between;padding:14px 16px;background:rgba(13,17,23,.97);border-bottom:1px solid var(--line);height:69px}
 .brand{font-weight:700;font-size:17px}
 .brand span{color:var(--accent)}
-.icon-btn{background:#21262d;border:1px solid var(--line);color:var(--text);min-width:40px;height:40px;border-radius:10px;font-size:17px;cursor:pointer;padding:0 8px}
+.icon-btn{background:#21262d;border:1px solid var(--line);color:var(--text);min-width:40px;height:40px;border-radius:10px;font-size:17px;cursor:pointer;padding:0 8px;touch-action:manipulation}
 .icon-btn.primary{background:var(--accent);border-color:var(--accent);color:#000}
-main{max-width:560px;margin:0 auto;padding:16px 14px 80px}
+main{max-width:560px;margin:0 auto;padding:0 14px 120px}
 .card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px;margin-bottom:14px}
-.card h2{margin:0 0 14px;font-size:13px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.07em;display:flex;align-items:center;gap:10px}
-.step{background:var(--accent);color:#000;width:22px;height:22px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:12px;font-weight:700}
-textarea,input[type=text],input[type=password]{width:100%;background:var(--bg);color:var(--text);border:1px solid var(--line);border-radius:10px;padding:12px;font:inherit;outline:none}
+textarea,input[type=text],input[type=password],input[type=url]{width:100%;background:var(--bg);color:var(--text);border:1px solid var(--line);border-radius:10px;padding:12px;font:inherit;outline:none}
 textarea:focus,input:focus{border-color:var(--accent)}
 textarea{resize:vertical;min-height:90px;line-height:1.5}
-.btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:13px;border:none;border-radius:10px;font:600 15px Inter,sans-serif;cursor:pointer}
+.btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:13px;border:none;border-radius:10px;font:600 15px Inter,sans-serif;cursor:pointer;touch-action:manipulation}
 .btn-primary{background:var(--accent);color:#000}
 .btn-dark{background:#21262d;color:var(--text);border:1px solid var(--line)}
 .btn:disabled{opacity:.65}
 .row{display:flex;gap:10px;margin-top:12px}
 .row .btn{flex:1}
-.toggle{display:flex;align-items:center;justify-content:space-between;padding:12px 0;font-size:14px}
+.toggle{display:flex;align-items:center;justify-content:space-between;padding:12px 0;font-size:14px;gap:10px}
 .switch{position:relative;width:44px;height:26px;flex-shrink:0}
 .switch input{opacity:0;width:0;height:0}
 .slider{position:absolute;inset:0;background:#30363d;border-radius:26px;transition:.2s;cursor:pointer}
@@ -39,33 +37,52 @@ textarea{resize:vertical;min-height:90px;line-height:1.5}
 .status.err{color:var(--red)}
 .status.ok{color:var(--green)}
 .label{display:flex;justify-content:space-between;font-size:12px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin:14px 0 8px}
-.hint{font-size:12px;color:var(--muted);margin:6px 0 0}
+.hint{font-size:12px;color:var(--muted);margin:8px 0 0}
 .chips{display:flex;flex-direction:column;gap:8px}
 .chip{text-align:left;background:var(--bg);border:1px solid var(--line);color:var(--text);border-radius:10px;padding:11px 12px;font:500 14px Inter,sans-serif;cursor:pointer;line-height:1.4}
 .chip.active{border-color:var(--accent);background:#1f1a05}
 .chip b{color:var(--accent);font-weight:700}
-.tag{display:inline-block;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);border:1px solid var(--line);border-radius:6px;padding:1px 6px;margin-right:6px;vertical-align:middle}
+.tag{display:inline-block;font-size:10px;font-weight:700;text-transform:uppercase;color:var(--muted);border:1px solid var(--line);border-radius:6px;padding:1px 6px;margin-right:6px;vertical-align:middle}
 .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
 .grid img{width:100%;aspect-ratio:1;object-fit:cover;border-radius:10px;border:2px solid transparent;cursor:pointer;background:#21262d}
 .grid img.active{border-color:var(--accent)}
 .links{display:flex;flex-wrap:wrap;gap:6px}
 .links a,.links button{font:500 13px Inter,sans-serif;color:var(--text);text-decoration:none;background:#21262d;border:1px solid var(--line);padding:7px 11px;border-radius:20px;cursor:pointer}
-input[type=range]{width:100%;accent-color:var(--accent)}
 .hidden{display:none!important}
 .spinner{width:16px;height:16px;border:2px solid rgba(0,0,0,.3);border-top-color:#000;border-radius:50%;animation:spin .7s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
 
-/* Sticky preview stage */
-.stage{position:sticky;top:69px;z-index:15;background:var(--bg);margin:0 -14px 14px;padding:10px 14px;border-bottom:1px solid var(--line)}
-.stage canvas{display:block;margin:0 auto;width:min(100%,calc(50vh * .8));height:auto;border-radius:12px;background:#000;touch-action:none}
-.stage.small canvas{width:min(100%,calc(28vh * .8))}
-.toolbar{display:flex;align-items:center;justify-content:center;gap:6px;margin-top:10px}
+/* Sticky stage */
+.stage{position:sticky;top:69px;z-index:15;background:var(--bg);margin:0 -14px 14px;padding:10px 14px 10px;border-bottom:1px solid var(--line)}
+.stage canvas{display:block;margin:0 auto;width:min(100%,calc(40vh * .8));height:auto;border-radius:12px;background:#000}
+.stage.small canvas{width:min(100%,calc(24vh * .8))}
+.toolbar{display:flex;align-items:center;justify-content:center;gap:6px;margin-top:8px}
 .seg{display:flex;background:#21262d;border:1px solid var(--line);border-radius:10px;padding:3px}
-.seg button{background:none;border:none;color:var(--muted);font:600 13px Inter,sans-serif;padding:8px 12px;border-radius:8px;cursor:pointer}
+.seg button{background:none;border:none;color:var(--muted);font:600 13px Inter,sans-serif;padding:7px 12px;border-radius:8px;cursor:pointer;touch-action:manipulation}
 .seg button.active{background:var(--accent);color:#000}
+.seg.icons button{font-size:16px;padding:6px 11px}
 .seg.full{width:100%}
 .seg.full button{flex:1}
 .gesture-hint{text-align:center;font-size:11px;color:var(--muted);margin-top:6px}
+.tabs{display:flex;gap:4px;margin-top:8px;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:4px}
+.tabs button{flex:1;background:none;border:none;color:var(--muted);font:600 11px Inter,sans-serif;padding:6px 2px;border-radius:9px;display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer;touch-action:manipulation}
+.tabs button .i{font-size:16px}
+.tabs button.active{background:#21262d;color:var(--accent)}
+.panel{display:none}
+.panel.active{display:block}
+
+/* Steppers */
+.stepper{display:flex;align-items:center;justify-content:space-between;padding:9px 0;border-bottom:1px solid var(--line)}
+.stepper:last-child{border-bottom:none}
+.stepper span{font-size:14px}
+.ctrl{display:flex;align-items:center;gap:6px}
+.ctrl button{width:42px;height:38px;border-radius:9px;background:#21262d;border:1px solid var(--line);color:var(--text);font-size:15px;cursor:pointer;touch-action:manipulation;user-select:none;-webkit-user-select:none}
+.ctrl button:active{background:#30363d}
+.ctrl output{min-width:54px;text-align:center;font:600 14px Inter,sans-serif;color:var(--accent)}
+
+.xbox{background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:12px;margin-top:12px}
+.xbox .who{font-size:13px;color:var(--muted);margin-bottom:6px}
+.xbox .txt{font-size:14px;line-height:1.5;margin-bottom:10px;white-space:pre-wrap}
 
 .modal{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:50;display:flex;align-items:flex-end;justify-content:center}
 .sheet{background:var(--card);border:1px solid var(--line);border-radius:18px 18px 0 0;padding:20px 16px 28px;width:100%;max-width:560px;max-height:90vh;overflow:auto}
@@ -82,10 +99,62 @@ input[type=range]{width:100%;accent-color:var(--accent)}
 </header>
 
 <main>
-  <!-- 1. NEWS -->
-  <section class="card">
-    <h2><span class="step">1</span>News</h2>
-    <textarea id="news" placeholder="Paste short news text...&#10;e.g. CM Vijay chairs flood review meeting with collectors"></textarea>
+  <!-- ===== STICKY STAGE ===== -->
+  <div class="stage" id="stage">
+    <canvas id="c" width="1080" height="1350"></canvas>
+    <div class="toolbar">
+      <div class="seg icons">
+        <button id="modeLock" onclick="setMode('lock')" title="Lock">🔒</button>
+        <button id="modePhoto" onclick="setMode('photo')" title="Edit photo">🖼</button>
+        <button id="modeText" onclick="setMode('text')" title="Edit text">🔤</button>
+      </div>
+      <button class="icon-btn" onclick="resetCurrent()" title="Reset">↺</button>
+      <button class="icon-btn" onclick="toggleStage()" title="Resize preview">⤡</button>
+      <button class="icon-btn" onclick="downloadImage()" title="Save">⬇️</button>
+      <button class="icon-btn primary" onclick="shareImage()" title="Share">📤</button>
+    </div>
+    <div class="gesture-hint" id="gestureHint"></div>
+    <div class="tabs" id="tabs">
+      <button data-tab="news" class="active"><span class="i">📰</span>News</button>
+      <button data-tab="text"><span class="i">🔤</span>Text</button>
+      <button data-tab="style"><span class="i">🎨</span>Style</button>
+      <button data-tab="photo"><span class="i">🖼</span>Photo</button>
+      <button data-tab="caption"><span class="i">📝</span>Caption</button>
+    </div>
+  </div>
+
+  <!-- ===== NEWS ===== -->
+  <section class="card panel active" data-panel="news">
+    <div class="seg full">
+      <button id="srcText" class="active" onclick="setSource('text')">✍️ Paste Text</button>
+      <button id="srcX" onclick="setSource('x')">𝕏 Post Link</button>
+    </div>
+
+    <div id="xArea" class="hidden">
+      <span class="label">X post link</span>
+      <div style="display:flex;gap:8px">
+        <input type="url" id="xUrl" placeholder="https://x.com/user/status/123...">
+        <button class="icon-btn primary" style="min-width:70px" onclick="fetchTweet()">Fetch</button>
+      </div>
+      <div id="xStatus" class="status"></div>
+      <div id="xPreview" class="xbox hidden">
+        <div class="who" id="xWho"></div>
+        <div class="txt" id="xText"></div>
+        <div class="grid" id="xImgs"></div>
+        <p class="hint">Tap an image to use it. The AI will also read text inside the first image.</p>
+      </div>
+    </div>
+
+    <span class="label" id="newsLabel">News text</span>
+    <textarea id="news" placeholder="Paste short news text...&#10;e.g. CM Vijay fixes base fare for auto rickshaws"></textarea>
+
+    <div class="toggle hidden" id="keyRow">
+      <span>🔑 API key</span>
+      <div class="seg">
+        <button data-key="0" onclick="setActiveKey(0)">Key 1</button>
+        <button data-key="1" onclick="setActiveKey(1)">Key 2</button>
+      </div>
+    </div>
     <div class="toggle">
       <span>🌐 Web search for more context</span>
       <label class="switch"><input type="checkbox" id="useSearch" checked><span class="slider"></span></label>
@@ -95,30 +164,13 @@ input[type=range]{width:100%;accent-color:var(--accent)}
     <div id="status" class="status"></div>
   </section>
 
-  <!-- STICKY PREVIEW -->
-  <div class="stage" id="stage">
-    <canvas id="c" width="1080" height="1350"></canvas>
-    <div class="toolbar">
-      <div class="seg">
-        <button id="modePhoto" class="active" onclick="setMode('photo')">🖼 Photo</button>
-        <button id="modeText" onclick="setMode('text')">🔤 Text</button>
-      </div>
-      <button class="icon-btn" onclick="resetCurrent()" title="Reset">↺</button>
-      <button class="icon-btn" onclick="toggleStage()" title="Resize preview">⤡</button>
-      <button class="icon-btn" onclick="downloadImage()" title="Save">⬇️</button>
-      <button class="icon-btn primary" onclick="shareImage()" title="Share">📤</button>
-    </div>
-    <div class="gesture-hint" id="gestureHint">Photo: drag to move · pinch to zoom</div>
-  </div>
-
-  <!-- 2. IMAGE TEXT -->
-  <section class="card">
-    <h2><span class="step">2</span>Image Text</h2>
+  <!-- ===== TEXT ===== -->
+  <section class="card panel" data-panel="text">
     <div id="optBox" class="hidden">
       <span class="label" style="margin-top:0">Pick a headline</span>
       <div id="headlineOptions" class="chips"></div>
-      <span class="label">Edit</span>
     </div>
+    <span class="label">Edit headline</span>
     <textarea id="headline" style="min-height:70px">*CM Vijay* chairs meeting with *17 Collectors* on flood safety !</textarea>
     <p class="hint">Wrap words in *stars* to make them yellow.</p>
     <div class="toggle">
@@ -128,28 +180,21 @@ input[type=range]{width:100%;accent-color:var(--accent)}
     <input type="text" id="titleText" class="hidden" placeholder="e.g. BREAKING / FLOOD ALERT / BOX OFFICE" autocomplete="off">
   </section>
 
-  <!-- 3. TEXT STYLE -->
-  <section class="card">
-    <h2><span class="step">3</span>Text Style</h2>
+  <!-- ===== STYLE ===== -->
+  <section class="card panel" data-panel="style">
     <span class="label" style="margin-top:0">Alignment</span>
     <div class="seg full">
       <button data-align="left" onclick="setAlign('left')">⬅ Left</button>
       <button data-align="center" onclick="setAlign('center')">↔ Center</button>
       <button data-align="right" onclick="setAlign('right')">Right ➡</button>
     </div>
-    <span class="label">Text size <span id="vSize"></span></span><input type="range" id="tsSize" min="24" max="110">
-    <span class="label">Headlines title size <span id="vTitle"></span></span><input type="range" id="tsTitle" min="30" max="150">
-    <span class="label">Up ↕ Down</span><input type="range" id="tsY" min="900" max="1340">
-    <span class="label">Left ↔ Right</span><input type="range" id="tsX" min="150" max="930">
-    <span class="label">Text width</span><input type="range" id="tsW" min="400" max="1060">
-    <span class="label">Line spacing</span><input type="range" id="tsLh" min="100" max="200">
-    <button class="btn btn-dark" onclick="resetText()" style="margin-top:14px">↺ Reset text style</button>
-    <p class="hint">Tip: switch to 🔤 Text mode on the preview, then drag to move and pinch to resize. Settings are saved automatically.</p>
+    <div id="steppers" style="margin-top:8px"></div>
+    <button class="btn btn-dark" onclick="resetText()" style="margin-top:12px">↺ Reset to default</button>
+    <p class="hint">Tap for small steps, hold for fast change. Saved automatically.</p>
   </section>
 
-  <!-- 4. PHOTO -->
-  <section class="card">
-    <h2><span class="step">4</span>Photo</h2>
+  <!-- ===== PHOTO ===== -->
+  <section class="card panel" data-panel="photo">
     <label class="btn btn-dark" for="photoFile">📁 Upload from phone</label>
     <input type="file" id="photoFile" accept="image/*" hidden>
     <div id="suggestBox" class="hidden">
@@ -158,12 +203,12 @@ input[type=range]{width:100%;accent-color:var(--accent)}
       <span class="label">Search Google Images</span>
       <div id="imgLinks" class="links"></div>
     </div>
+    <p class="hint">After choosing, tap 🖼 above to move or zoom the photo.</p>
   </section>
 
-  <!-- 5. CAPTION -->
-  <section class="card">
-    <h2><span class="step">5</span>Caption</h2>
-    <textarea id="caption" style="min-height:240px" placeholder="Caption will appear here..."></textarea>
+  <!-- ===== CAPTION ===== -->
+  <section class="card panel" data-panel="caption">
+    <textarea id="caption" style="min-height:260px" placeholder="Caption will appear here..."></textarea>
     <button class="btn btn-primary" onclick="copyCaption()" style="margin-top:12px">📋 Copy Caption</button>
     <div id="sourcesBox" class="hidden">
       <span class="label">Sources used · verify before posting</span>
@@ -172,13 +217,16 @@ input[type=range]{width:100%;accent-color:var(--accent)}
   </section>
 </main>
 
-<!-- SETTINGS -->
+<!-- ===== SETTINGS ===== -->
 <div id="settings" class="modal hidden" onclick="if(event.target===this)closeSettings()">
   <div class="sheet">
     <h3>Settings</h3>
     <p class="hint">Saved only on this phone.</p>
-    <span class="label">Gemini API Key</span>
-    <input type="password" id="apiKey" placeholder="Paste your API key">
+    <span class="label">Gemini API Key 1</span>
+    <input type="password" id="apiKey1" placeholder="Paste key 1">
+    <span class="label">Gemini API Key 2 (backup)</span>
+    <input type="password" id="apiKey2" placeholder="Paste key 2 (optional)">
+    <p class="hint">If one key hits its limit, the app switches to the other automatically.</p>
     <span class="label">Preferred model (optional)</span>
     <input type="text" id="model" placeholder="auto">
     <button class="btn btn-dark" onclick="findModels()" style="margin-top:8px">🔍 Find available models</button>
@@ -197,27 +245,39 @@ input[type=range]{width:100%;accent-color:var(--accent)}
 <script>
 // ================= CONFIG =================
 const W = 1080, H = 1350;
-const DEFAULT_TS = { cx: 540, cy: 1120, size: 48, titleSize: 68, width: 930, lh: 1.38, align: 'center' };
+const MARGIN = 60;                       // left/right guide margin (px)
+const SNAP = 16;                         // snap distance (px)
+const DEFAULT_TS = { cx: 540, cy: 1120, size: 34, titleSize: 48, width: 930, lh: 1.30, align: 'center' };
 const YELLOW = '#FFD21F', WHITE = '#FFFFFF', SANDAL = '#F2D3A0';
 const DEFAULT_MODEL = 'gemini-3.8-flash';
+const TS_KEY = 'textStyle_v3';
+const STEPS = {
+  size:      { label: 'Text size',    step: 1,    min: 16,  max: 140,  dec: '−', inc: '+', fmt: v => Math.round(v) },
+  titleSize: { label: 'Title size',   step: 2,    min: 20,  max: 180,  dec: '−', inc: '+', fmt: v => Math.round(v) },
+  cy:        { label: 'Up / Down',    step: 5,    min: 0,   max: H,    dec: '▲', inc: '▼', fmt: v => Math.round(v) },
+  cx:        { label: 'Left / Right', step: 5,    min: 0,   max: W,    dec: '◀', inc: '▶', fmt: v => Math.round(v) },
+  width:     { label: 'Text width',   step: 10,   min: 300, max: 1060, dec: '−', inc: '+', fmt: v => Math.round(v) },
+  lh:        { label: 'Line spacing', step: 0.05, min: 1,   max: 2.2,  dec: '−', inc: '+', fmt: v => v.toFixed(2) }
+};
 // ==========================================
 
 const $ = id => document.getElementById(id);
 const canvas = $('c'), ctx = canvas.getContext('2d');
 const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
 const esc = s => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const proxy = u => 'https://wsrv.nl/?url=' + encodeURIComponent(u);
 
 let overlay = null, box = null, photo = null;
-let ph = { s: 1, x: 0, y: 0 };                                   // photo transform
-let ts = Object.assign({}, DEFAULT_TS, JSON.parse(localStorage.getItem('textStyle') || '{}')); // text style
-let mode = 'photo', exporting = false, lastTextBox = null;
+let ph = { s: 1, x: 0, y: 0 };
+let ts = Object.assign({}, DEFAULT_TS, JSON.parse(localStorage.getItem(TS_KEY) || '{}'));
+let mode = 'lock', exporting = false, lastTextBox = null, guides = [];
 let ctrl = null, cancelled = false, timerInt = null, t0 = 0, curLabel = '';
-let suggestions = [];
+let suggestions = [], newsSrc = 'text', xData = null;
 
 // ---------- UI helpers ----------
 function toast(msg){
   const t = $('toast'); t.textContent = msg; t.classList.add('show');
-  clearTimeout(t._h); t._h = setTimeout(() => t.classList.remove('show'), 2500);
+  clearTimeout(t._h); t._h = setTimeout(() => t.classList.remove('show'), 2600);
 }
 function setStatus(msg, type){ const s = $('status'); s.textContent = msg; s.className = 'status' + (type ? ' ' + type : ''); }
 function setLabel(l){ curLabel = l; setStatus(`${l} ${Math.round((Date.now() - t0) / 1000)}s`); }
@@ -230,30 +290,72 @@ function setBusy(b){
 }
 function setMode(m){
   mode = m;
-  $('modePhoto').classList.toggle('active', m === 'photo');
-  $('modeText').classList.toggle('active', m === 'text');
-  $('gestureHint').textContent = m === 'photo' ? 'Photo: drag to move · pinch to zoom' : 'Text: drag to move · pinch to resize';
+  ['Lock', 'Photo', 'Text'].forEach(n => $('mode' + n).classList.toggle('active', m === n.toLowerCase()));
+  canvas.style.touchAction = m === 'lock' ? 'auto' : 'none';
+  $('gestureHint').textContent = {
+    lock: '🔒 Locked · swipe freely to scroll',
+    photo: '🖼 Photo · drag to move · pinch to zoom',
+    text: '🔤 Text · drag to move · pinch to resize'
+  }[m];
   render();
 }
 function toggleStage(){ $('stage').classList.toggle('small'); }
-function resetCurrent(){ if (mode === 'photo'){ ph = { s: 1, x: 0, y: 0 }; render(); } else resetText(); }
+function resetCurrent(){
+  if (mode === 'photo'){ ph = { s: 1, x: 0, y: 0 }; render(); toast('Photo reset'); }
+  else if (mode === 'text') resetText();
+  else toast('Select 🖼 or 🔤 first');
+}
+function switchTab(name){
+  document.querySelectorAll('#tabs button').forEach(b => b.classList.toggle('active', b.dataset.tab === name));
+  document.querySelectorAll('.panel').forEach(p => p.classList.toggle('active', p.dataset.panel === name));
+  window.scrollTo({ top: 0 });
+}
+document.querySelectorAll('#tabs button').forEach(b => b.onclick = () => switchTab(b.dataset.tab));
+
+function setSource(s){
+  newsSrc = s;
+  $('srcText').classList.toggle('active', s === 'text');
+  $('srcX').classList.toggle('active', s === 'x');
+  $('xArea').classList.toggle('hidden', s !== 'x');
+  $('newsLabel').textContent = s === 'x' ? 'Post text (editable)' : 'News text';
+}
+
+// ---------- API keys ----------
+function getKeys(){ return [localStorage.getItem('gkey') || '', localStorage.getItem('gkey2') || '']; }
+function activeKey(){ return +(localStorage.getItem('gActive') || 0); }
+function setActiveKey(i){
+  if (!getKeys()[i]) return toast(`Key ${i + 1} is empty. Add it in ⚙️`);
+  localStorage.setItem('gActive', i); updateKeySwitch(); toast(`🔑 Using Key ${i + 1}`);
+}
+function updateKeySwitch(){
+  const k = getKeys();
+  $('keyRow').classList.toggle('hidden', !(k[0] && k[1]));
+  document.querySelectorAll('[data-key]').forEach(b => b.classList.toggle('active', +b.dataset.key === activeKey()));
+}
+function keyOrder(){
+  const k = getKeys(), a = activeKey();
+  return [a, 1 - a].filter(i => k[i]).map(i => ({ i, k: k[i] }));
+}
 
 // ---------- Settings ----------
 function openSettings(){
-  $('apiKey').value = localStorage.getItem('gkey') || '';
+  const k = getKeys();
+  $('apiKey1').value = k[0]; $('apiKey2').value = k[1];
   $('model').value = localStorage.getItem('gmodel') || '';
   $('settings').classList.remove('hidden');
 }
 function closeSettings(){ $('settings').classList.add('hidden'); }
 function saveSettings(){
-  localStorage.setItem('gkey', $('apiKey').value.trim());
+  localStorage.setItem('gkey', $('apiKey1').value.trim());
+  localStorage.setItem('gkey2', $('apiKey2').value.trim());
   localStorage.setItem('gmodel', $('model').value.trim());
+  if (!getKeys()[activeKey()]) localStorage.setItem('gActive', getKeys()[0] ? 0 : 1);
   localStorage.removeItem('gmodels');
-  closeSettings(); toast('✅ Settings saved');
+  updateKeySwitch(); closeSettings(); toast('✅ Settings saved');
 }
 async function findModels(){
-  const key = $('apiKey').value.trim();
-  if (!key) return toast('Paste API key first');
+  const key = $('apiKey1').value.trim() || $('apiKey2').value.trim();
+  if (!key) return toast('Paste an API key first');
   $('modelList').innerHTML = '<span class="hint">Loading...</span>';
   try{
     localStorage.removeItem('gmodels');
@@ -262,7 +364,7 @@ async function findModels(){
   }catch(e){ $('modelList').innerHTML = `<span class="hint" style="color:var(--red)">${esc(e.message)}</span>`; }
 }
 
-// ---------- Template (green screen) ----------
+// ---------- Template ----------
 function loadTemplate(src){
   const img = new Image();
   img.onload = () => { processTemplate(img); render(); };
@@ -298,11 +400,11 @@ $('tplFile').onchange = e => {
 };
 
 // ---------- Photo ----------
-function setPhoto(src, cors){
+function setPhoto(src, cors, fallback){
   const img = new Image();
   if (cors) img.crossOrigin = 'anonymous';
-  img.onload = () => { photo = img; ph = { s: 1, x: 0, y: 0 }; setMode('photo'); };
-  img.onerror = () => toast('Could not load image. Save it & upload instead.');
+  img.onload = () => { photo = img; ph = { s: 1, x: 0, y: 0 }; render(); toast('Photo applied ✅ Tap 🖼 to adjust'); };
+  img.onerror = () => fallback ? setPhoto(fallback, true) : toast('Could not load image. Save it & upload instead.');
   img.src = src;
 }
 $('photoFile').onchange = e => {
@@ -310,29 +412,47 @@ $('photoFile').onchange = e => {
   document.querySelectorAll('.grid img').forEach(x => x.classList.remove('active'));
   setPhoto(URL.createObjectURL(f), false);
 };
-
-// ---------- Text style controls ----------
-const SLIDERS = { tsSize: ['size', 1], tsTitle: ['titleSize', 1], tsY: ['cy', 1], tsX: ['cx', 1], tsW: ['width', 1], tsLh: ['lh', 100] };
-function syncSliders(){
-  for (const id in SLIDERS){ const [k, m] = SLIDERS[id]; $(id).value = Math.round(ts[k] * m); }
-  $('vSize').textContent = Math.round(ts.size);
-  $('vTitle').textContent = Math.round(ts.titleSize);
-  document.querySelectorAll('[data-align]').forEach(b => b.classList.toggle('active', b.dataset.align === ts.align));
+function photoDims(){
+  const cover = Math.max(box.w / photo.width, box.h / photo.height);
+  return { dw: photo.width * cover * ph.s, dh: photo.height * cover * ph.s, bcx: box.x + box.w / 2, bcy: box.y + box.h / 2 };
 }
-function saveTS(){ localStorage.setItem('textStyle', JSON.stringify(ts)); }
-for (const id in SLIDERS){
-  $(id).addEventListener('input', () => {
-    const [k, m] = SLIDERS[id]; ts[k] = $(id).value / m;
-    $('vSize').textContent = Math.round(ts.size); $('vTitle').textContent = Math.round(ts.titleSize);
-    saveTS(); scheduleRender();
+
+// ---------- Steppers ----------
+function buildSteppers(){
+  $('steppers').innerHTML = Object.entries(STEPS).map(([k, s]) => `
+    <div class="stepper"><span>${s.label}</span>
+      <div class="ctrl">
+        <button data-k="${k}" data-d="-1">${s.dec}</button>
+        <output id="v_${k}"></output>
+        <button data-k="${k}" data-d="1">${s.inc}</button>
+      </div>
+    </div>`).join('');
+  document.querySelectorAll('.ctrl button').forEach(btn => {
+    let hold = null, rep = null, repeated = false;
+    const step = () => bump(btn.dataset.k, +btn.dataset.d);
+    const stop = () => { clearTimeout(hold); clearInterval(rep); };
+    btn.addEventListener('pointerdown', () => { repeated = false; hold = setTimeout(() => { repeated = true; rep = setInterval(step, 70); }, 450); });
+    ['pointerup', 'pointerleave', 'pointercancel'].forEach(ev => btn.addEventListener(ev, stop));
+    btn.addEventListener('click', () => { if (!repeated) step(); repeated = false; });
+    btn.addEventListener('contextmenu', e => e.preventDefault());
   });
 }
-function setAlign(a){ ts.align = a; saveTS(); syncSliders(); render(); }
-function resetText(){ ts = Object.assign({}, DEFAULT_TS); saveTS(); syncSliders(); render(); toast('Text style reset'); }
+function bump(k, d){
+  const s = STEPS[k];
+  ts[k] = clamp(Math.round((ts[k] + d * s.step) * 100) / 100, s.min, s.max);
+  saveTS(); syncSteppers(); scheduleRender();
+}
+function syncSteppers(){
+  for (const k in STEPS) $('v_' + k).textContent = STEPS[k].fmt(ts[k]);
+  document.querySelectorAll('[data-align]').forEach(b => b.classList.toggle('active', b.dataset.align === ts.align));
+}
+function saveTS(){ localStorage.setItem(TS_KEY, JSON.stringify(ts)); }
+function setAlign(a){ ts.align = a; saveTS(); syncSteppers(); render(); }
+function resetText(){ ts = Object.assign({}, DEFAULT_TS); saveTS(); syncSteppers(); render(); toast('Text reset to default'); }
 
-$('headline').addEventListener('input', scheduleRender);
-$('titleText').addEventListener('input', scheduleRender);
-$('titleOn').checked = false; // always off on start
+$('headline').addEventListener('input', () => scheduleRender());
+$('titleText').addEventListener('input', () => scheduleRender());
+$('titleOn').checked = false;
 $('titleOn').addEventListener('change', () => {
   $('titleText').classList.toggle('hidden', !$('titleOn').checked);
   if ($('titleOn').checked) $('titleText').focus();
@@ -346,14 +466,13 @@ function scheduleRender(){ if (!raf) raf = requestAnimationFrame(() => { raf = 0
 function render(){
   ctx.fillStyle = '#0b1220'; ctx.fillRect(0, 0, W, H);
   if (photo && box){
-    const cover = Math.max(box.w / photo.width, box.h / photo.height);
-    const sc = cover * ph.s, dw = photo.width * sc, dh = photo.height * sc;
-    const cx = box.x + box.w / 2 + ph.x, cy = box.y + box.h / 2 + ph.y;
+    const { dw, dh, bcx, bcy } = photoDims();
     ctx.save(); ctx.beginPath(); ctx.rect(box.x, box.y, box.w, box.h); ctx.clip();
-    ctx.drawImage(photo, cx - dw / 2, cy - dh / 2, dw, dh); ctx.restore();
+    ctx.drawImage(photo, bcx + ph.x - dw / 2, bcy + ph.y - dh / 2, dw, dh); ctx.restore();
   }
   if (overlay) ctx.drawImage(overlay, 0, 0);
   drawText();
+  drawGuides();
 }
 
 function parseHeadline(s){
@@ -367,7 +486,6 @@ function parseHeadline(s){
     return segs;
   }).filter(w => w.length);
 }
-
 function wrap(words, size, weight){
   ctx.font = `${weight} ${size}px Poppins`;
   const space = ctx.measureText(' ').width;
@@ -381,13 +499,11 @@ function wrap(words, size, weight){
   if (line.length) lines.push({ words: line, width: lw });
   return { lines, space };
 }
-
 function drawText(){
   const rows = [];
   const titleTxt = $('titleText').value.trim();
   if ($('titleOn').checked && titleTxt){
-    const words = titleTxt.split(/\s+/).map(t => [{ t, c: SANDAL }]);
-    const r = wrap(words, ts.titleSize, 800);
+    const r = wrap(titleTxt.split(/\s+/).map(t => [{ t, c: SANDAL }]), ts.titleSize, 800);
     r.lines.forEach(l => rows.push({ ...l, size: ts.titleSize, weight: 800, space: r.space, lh: ts.titleSize * 1.2 }));
   }
   const hw = parseHeadline($('headline').value);
@@ -399,10 +515,9 @@ function drawText(){
   if (!rows.length){ lastTextBox = null; return; }
 
   const total = rows.reduce((s, r) => s + (r.gap || r.lh), 0);
-  let y = ts.cy - total / 2;
+  let y = ts.cy - total / 2, minX = Infinity, maxX = -Infinity;
   ctx.textBaseline = 'middle';
   ctx.shadowColor = 'rgba(0,0,0,0.5)'; ctx.shadowBlur = 6;
-
   rows.forEach(r => {
     if (r.gap){ y += r.gap; return; }
     const yc = y + r.lh / 2;
@@ -410,6 +525,7 @@ function drawText(){
     let x = ts.align === 'left' ? ts.cx - ts.width / 2
           : ts.align === 'right' ? ts.cx + ts.width / 2 - r.width
           : ts.cx - r.width / 2;
+    minX = Math.min(minX, x); maxX = Math.max(maxX, x + r.width);
     r.words.forEach((w, i) => {
       if (i) x += r.space;
       w.forEach(seg => { ctx.fillStyle = seg.c; ctx.fillText(seg.t, x, yc); x += ctx.measureText(seg.t).width; });
@@ -418,16 +534,63 @@ function drawText(){
   });
   ctx.shadowBlur = 0;
 
-  // Dashed guide box in Text mode (not exported)
-  lastTextBox = { x: ts.cx - ts.width / 2, y: ts.cy - total / 2, w: ts.width, h: total };
+  lastTextBox = { l: minX - ts.cx, r: maxX - ts.cx, top: ts.cy - total / 2, h: total };
   if (mode === 'text' && !exporting){
     ctx.save(); ctx.setLineDash([14, 10]); ctx.lineWidth = 3; ctx.strokeStyle = 'rgba(255,210,31,0.9)';
-    ctx.strokeRect(lastTextBox.x - 12, lastTextBox.y - 12, lastTextBox.w + 24, lastTextBox.h + 24);
+    ctx.strokeRect(minX - 14, lastTextBox.top - 12, maxX - minX + 28, total + 24);
     ctx.restore();
   }
 }
+function drawGuides(){
+  if (!g || exporting || !guides.length) return;
+  ctx.save();
+  guides.forEach(gd => {
+    ctx.beginPath();
+    ctx.setLineDash(gd.on ? [] : [12, 10]);
+    ctx.lineWidth = gd.on ? 3 : 2;
+    ctx.strokeStyle = gd.on ? '#ff2bd6' : 'rgba(255,255,255,0.45)';
+    if (gd.v){ ctx.moveTo(gd.pos, 0); ctx.lineTo(gd.pos, H); }
+    else { ctx.moveTo(0, gd.pos); ctx.lineTo(W, gd.pos); }
+    ctx.stroke();
+  });
+  ctx.restore();
+}
 
-// ---------- Touch gestures (drag + pinch) ----------
+// ---------- Guides + snapping ----------
+function updateGuides(doSnap){
+  guides = [];
+  const axis = (v, list, apply) => {
+    let snapped = false;
+    list.forEach(c => {
+      const on = !snapped && Math.abs(c.val - c.pos) < SNAP;
+      if (on){ snapped = true; if (doSnap) apply(c.pos - c.val); }
+      guides.push({ v, pos: c.pos, on });
+    });
+  };
+  if (mode === 'text' && lastTextBox){
+    const L = lastTextBox;
+    axis(true, [
+      { pos: W / 2,      val: ts.cx + (L.l + L.r) / 2 },   // post centre
+      { pos: MARGIN,     val: ts.cx + L.l },               // left margin
+      { pos: W - MARGIN, val: ts.cx + L.r }                // right margin
+    ], d => ts.cx += d);
+  }
+  if (mode === 'photo' && photo && box){
+    const { dw, dh, bcx, bcy } = photoDims();
+    axis(true, [
+      { pos: bcx,           val: bcx + ph.x },
+      { pos: box.x,         val: bcx + ph.x - dw / 2 },
+      { pos: box.x + box.w, val: bcx + ph.x + dw / 2 }
+    ], d => ph.x += d);
+    axis(false, [
+      { pos: bcy,           val: bcy + ph.y },
+      { pos: box.y,         val: bcy + ph.y - dh / 2 },
+      { pos: box.y + box.h, val: bcy + ph.y + dh / 2 }
+    ], d => ph.y += d);
+  }
+}
+
+// ---------- Touch gestures ----------
 const pts = new Map(); let g = null;
 function toCanvas(e){
   const r = canvas.getBoundingClientRect();
@@ -440,9 +603,9 @@ function gInfo(){
   return { n: p.length, c, d };
 }
 function startGesture(){
-  if (!pts.size){ g = null; return; }
-  const i = gInfo();
-  g = { ...i, ph: { ...ph }, ts: { ...ts } };
+  if (!pts.size){ g = null; guides = []; render(); return; }
+  g = { ...gInfo(), ph: { ...ph }, ts: { ...ts } };
+  updateGuides(false); render();
 }
 function moveGesture(){
   if (!g) return;
@@ -450,7 +613,6 @@ function moveGesture(){
   if (i.n !== g.n){ startGesture(); return; }
   const dx = i.c.x - g.c.x, dy = i.c.y - g.c.y;
   const ratio = (g.n > 1 && g.d > 0) ? i.d / g.d : 1;
-
   if (mode === 'photo'){
     if (!photo || !box) return;
     const bcx = box.x + box.w / 2, bcy = box.y + box.h / 2;
@@ -462,49 +624,103 @@ function moveGesture(){
     ts.cx = clamp(g.ts.cx + dx, 0, W);
     ts.cy = clamp(g.ts.cy + dy, 0, H);
     if (g.n > 1){
-      ts.size = clamp(g.ts.size * ratio, 18, 140);
+      ts.size = clamp(g.ts.size * ratio, 16, 140);
       ts.titleSize = clamp(g.ts.titleSize * ratio, 20, 180);
     }
-    syncSliders();
   }
+  updateGuides(g.n === 1);
+  if (mode === 'text') syncSteppers();
   scheduleRender();
 }
-canvas.addEventListener('pointerdown', e => { canvas.setPointerCapture(e.pointerId); pts.set(e.pointerId, toCanvas(e)); startGesture(); });
+canvas.addEventListener('pointerdown', e => {
+  if (mode === 'lock') return;
+  canvas.setPointerCapture(e.pointerId); pts.set(e.pointerId, toCanvas(e)); startGesture();
+});
 canvas.addEventListener('pointermove', e => { if (!pts.has(e.pointerId)) return; pts.set(e.pointerId, toCanvas(e)); moveGesture(); });
-['pointerup', 'pointercancel', 'pointerleave'].forEach(ev => canvas.addEventListener(ev, e => {
+['pointerup', 'pointercancel'].forEach(ev => canvas.addEventListener(ev, e => {
   if (!pts.has(e.pointerId)) return;
   pts.delete(e.pointerId); startGesture();
   if (mode === 'text') saveTS();
 }));
-canvas.addEventListener('wheel', e => {   // desktop: scroll wheel zoom
+canvas.addEventListener('wheel', e => {
+  if (mode === 'lock') return;
   e.preventDefault();
   const f = e.deltaY < 0 ? 1.08 : 1 / 1.08;
   if (mode === 'photo') ph.s = clamp(ph.s * f, 0.3, 8);
-  else { ts.size = clamp(ts.size * f, 18, 140); ts.titleSize = clamp(ts.titleSize * f, 20, 180); syncSliders(); saveTS(); }
+  else { ts.size = clamp(ts.size * f, 16, 140); ts.titleSize = clamp(ts.titleSize * f, 20, 180); syncSteppers(); saveTS(); }
   scheduleRender();
 }, { passive: false });
 
+// ---------- X (Twitter) post ----------
+function parseXUrl(u){
+  const m = u.match(/(?:twitter\.com|x\.com)\/([A-Za-z0-9_]+)\/status(?:es)?\/(\d+)/i);
+  return m ? { user: m[1], id: m[2] } : null;
+}
+async function fetchTweet(){
+  const p = parseXUrl($('xUrl').value.trim());
+  const xs = $('xStatus');
+  if (!p){ xs.textContent = '⚠️ Not a valid X post link'; xs.className = 'status err'; return; }
+  xs.textContent = '⏳ Fetching post...'; xs.className = 'status';
+  let t = null;
+  try{
+    const d = await (await fetch(`https://api.fxtwitter.com/${p.user}/status/${p.id}`)).json();
+    if (d.tweet) t = { text: d.tweet.text || '', name: d.tweet.author?.name, handle: d.tweet.author?.screen_name,
+                       photos: (d.tweet.media?.photos || []).map(x => x.url) };
+  }catch(_){}
+  if (!t){
+    try{
+      const d = await (await fetch(`https://api.vxtwitter.com/${p.user}/status/${p.id}`)).json();
+      if (d.text !== undefined) t = { text: d.text || '', name: d.user_name, handle: d.user_screen_name,
+        photos: (d.media_extended || []).filter(m => m.type === 'image').map(m => m.url).concat(d.media_extended ? [] : (d.mediaURLs || [])) };
+    }catch(_){}
+  }
+  if (!t){ xs.textContent = '❌ Could not fetch. Post may be private, or the service is down. Copy text manually.'; xs.className = 'status err'; return; }
+
+  t.text = t.text.replace(/https?:\/\/t\.co\/\S+/g, '').trim();
+  xData = t;
+  $('news').value = t.text;
+  $('xWho').textContent = `${t.name || ''} @${t.handle || p.user}`;
+  $('xText').textContent = t.text || '(no text, image only)';
+  $('xImgs').innerHTML = t.photos.map((u, i) => `<img src="${esc(u)}" data-i="${i}" alt="post image">`).join('');
+  $('xImgs').querySelectorAll('img').forEach(img => img.onclick = () => {
+    $('xImgs').querySelectorAll('img').forEach(x => x.classList.remove('active'));
+    img.classList.add('active');
+    const u = t.photos[img.dataset.i];
+    setPhoto(u, true, proxy(u));
+  });
+  $('xPreview').classList.remove('hidden');
+  xs.textContent = `✅ Fetched · ${t.photos.length} image(s)`; xs.className = 'status ok';
+  if (t.photos[0]){ setPhoto(t.photos[0], true, proxy(t.photos[0])); $('xImgs').querySelector('img').classList.add('active'); }
+}
+async function imageToBase64(url){
+  const r = await fetch(proxy(url) + '&w=1024&output=jpg');
+  if (!r.ok) throw new Error('image fetch failed');
+  const b = await r.blob();
+  return new Promise(res => { const fr = new FileReader(); fr.onload = () => res({ mime: 'image/jpeg', data: fr.result.split(',')[1] }); fr.readAsDataURL(b); });
+}
+
 // ---------- AI ----------
-function buildPrompt(news, search){
+function buildPrompt(news, search, hasImage){
   return `You create content for "Update Machi", an Instagram news page about Tamil Nadu (also India, world, cinema, sports, politics, tech).
 ${search ? 'First use Google Search to find accurate extra context about this news (full names, roles, places, dates, numbers). Use reliable recent sources.' : ''}
+${hasImage ? "An image from the original X post is attached. It may contain the headline or key facts, so read it carefully. Ignore other pages' logos, watermarks and handles." : ''}
 RULES: Never invent facts. If unsure about something, leave it out. Use simple English.
 
 NEWS:
-"""${news}"""
+"""${news || '(No text. Use the attached image.)'}"""
 
 Reply with ONLY a JSON object (no markdown, no backticks) with these keys:
 "headlines": array of EXACTLY 4 options for the IMAGE text, in this order:
    - options 1 and 2: SHORT, 45-65 characters (8-12 words), fits in 2 lines.
-   - options 3 and 4: LONGER, 75-105 characters (13-18 words), about 3 lines, with more context (who/where/why/numbers).
+   - options 3 and 4: LONGER, 75-105 characters (13-18 words), about 3 lines, with more context.
    In every option wrap 2-3 key words (names, places, numbers, key action) in *stars* to show them in yellow. End with " !" (space before !). Never include the word BREAKING.
 "title": catchy caption title, 8-14 words, ends with "!" (use "BREAKING: " prefix for urgent news).
 "para1": 2-3 sentences: what happened, who, where.
 "para2": 2-3 sentences: outcome, reactions or significance.
 "hashtags": array of exactly 2 hashtags with # (e.g. place + topic).
-"keywords": array of 30-40 SEO keyword phrases (names, places, topic, variations like "Tamil Nadu News Today"). Do not include "Update Machi".
-"wiki_titles": array of up to 4 exact English Wikipedia article titles for the main people/places/events (e.g. "Vijay (actor)", "WorldSkills").
-"image_queries": array of 3 short Google Image search queries to find a good photo for this post.
+"keywords": array of 30-40 SEO keyword phrases. Do not include "Update Machi".
+"wiki_titles": up to 5 exact English Wikipedia article titles of the GENERAL subjects involved: main people, organisations, places and objects (e.g. "Vijay (actor)", "Tamil Nadu", "Auto rickshaw"). NOT the specific event.
+"image_queries": 4 SHORT, GENERAL image searches (2-4 words), each about ONE subject only: a person, a place, or an object (e.g. "CM Vijay", "Chennai auto rickshaw", "Tamil Nadu Secretariat"). Do NOT describe the specific event or decision.
 
 EXAMPLE short headlines:
 "*TVK* wins both *Madurantakam* and *Dharapuram* by-elections !"
@@ -538,14 +754,14 @@ function thinkingFor(model){
   if (/gemini-[3-9]/.test(model)) return { thinkingLevel: 'low' };
   return null;
 }
-async function callGemini(key, model, prompt, search, timeout, useThinking){
+async function callGemini(key, model, parts, search, timeout, useThinking){
   ctrl = new AbortController();
   const tm = setTimeout(() => ctrl.abort(), timeout);
   const gc = { temperature: 0.6 };
   if (!search) gc.responseMimeType = 'application/json';
   const th = useThinking ? thinkingFor(model) : null;
   if (th) gc.thinkingConfig = th;
-  const body = { contents: [{ role: 'user', parts: [{ text: prompt }] }], generationConfig: gc };
+  const body = { contents: [{ role: 'user', parts }], generationConfig: gc };
   if (search) body.tools = [{ google_search: {} }];
   try{
     const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${key}`, {
@@ -567,46 +783,68 @@ async function callGemini(key, model, prompt, search, timeout, useThinking){
   }finally{ clearTimeout(tm); }
 }
 
-async function generate(){
-  const key = localStorage.getItem('gkey');
-  if (!key){ toast('Add your Gemini API key first'); openSettings(); return; }
-  const news = $('news').value.trim();
-  if (!news){ toast('Paste news text first'); return; }
-
-  cancelled = false; setBusy(true); setLabel('⏳ Checking models...');
-  let models;
-  try { models = await getModels(key); }
-  catch(e){ setBusy(false); setStatus('❌ ' + e.message, 'err'); return; }
-  if (!models.length) models = [DEFAULT_MODEL];
-  const chosen = localStorage.getItem('gmodel');
-  if (chosen && models.includes(chosen)) models = [chosen, ...models.filter(m => m !== chosen)];
-  models = models.slice(0, 4);
-
+async function tryModels(key, ki, models, news, img){
   const modes = $('useSearch').checked ? [true, false] : [false];
-  let lastErr = '';
-  outer:
+  let err = '';
   for (const model of models){
     for (const search of modes){
-      if (cancelled) break outer;
-      setLabel(`⏳ ${model}${search ? ' + web search' : ''}...`);
-      const prompt = buildPrompt(news, search), t = search ? 45000 : 25000;
+      if (cancelled) return { ok: false, err: 'Cancelled' };
+      setLabel(`⏳ Key ${ki + 1} · ${model}${search ? ' + web' : ''}...`);
+      const parts = [{ text: buildPrompt(news, search, !!img) }];
+      if (img) parts.push({ inline_data: { mime_type: img.mime, data: img.data } });
+      const t = search ? 45000 : 25000;
       try{
         let out;
-        try { out = await callGemini(key, model, prompt, search, t, true); }
+        try { out = await callGemini(key, model, parts, search, t, true); }
         catch(e){
-          if (/thinking/i.test(e.message) && !cancelled) out = await callGemini(key, model, prompt, search, t, false);
+          if (/thinking/i.test(e.message) && !cancelled) out = await callGemini(key, model, parts, search, t, false);
           else throw e;
         }
         applyResult(out.json, out.sources);
-        setBusy(false);
-        setStatus(`✅ Done · ${model}${search ? ' + web search' : ''}`, 'ok');
-        return;
+        return { ok: true, label: model + (search ? ' + web search' : '') };
       }catch(e){
-        lastErr = `${model}: ${e.message}`; console.warn(lastErr);
-        if (/API key/i.test(e.message)) break outer;
-        if (/no longer available|not found/i.test(e.message)){ localStorage.removeItem('gmodels'); continue outer; }
+        err = `Key ${ki + 1} · ${model}: ${e.message}`; console.warn(err);
+        if (/API key/i.test(e.message)) return { ok: false, err };
+        if (/no longer available|not found/i.test(e.message)){ localStorage.removeItem('gmodels'); break; }
       }
     }
+  }
+  return { ok: false, err };
+}
+
+async function generate(){
+  const keys = keyOrder();
+  if (!keys.length){ toast('Add your Gemini API key first'); openSettings(); return; }
+  const news = $('news').value.trim();
+  const hasXImg = newsSrc === 'x' && xData && xData.photos.length;
+  if (!news && !hasXImg){ toast('Paste news text or fetch a post first'); return; }
+
+  cancelled = false; setBusy(true); setLabel('⏳ Preparing...');
+  let img = null;
+  if (hasXImg){
+    setLabel('⏳ Reading post image...');
+    try { img = await imageToBase64(xData.photos[0]); } catch(_){ img = null; }
+  }
+
+  let lastErr = '';
+  for (const { i, k } of keys){
+    if (cancelled) break;
+    setLabel(`⏳ Key ${i + 1} · checking models...`);
+    let models;
+    try { models = await getModels(k); }
+    catch(e){ lastErr = `Key ${i + 1}: ${e.message}`; continue; }
+    if (!models.length) models = [DEFAULT_MODEL];
+    const chosen = localStorage.getItem('gmodel');
+    if (chosen && models.includes(chosen)) models = [chosen, ...models.filter(m => m !== chosen)];
+    const r = await tryModels(k, i, models.slice(0, 4), news, img);
+    if (r.ok){
+      if (i !== activeKey()){ localStorage.setItem('gActive', i); updateKeySwitch(); toast(`🔑 Switched to Key ${i + 1}`); }
+      setBusy(false);
+      setStatus(`✅ Done · ${r.label} · Key ${i + 1}`, 'ok');
+      switchTab('text');
+      return;
+    }
+    lastErr = r.err;
   }
   localStorage.removeItem('gmodels');
   setBusy(false);
@@ -640,12 +878,11 @@ ${kw}`;
 
   $('sourcesBox').classList.toggle('hidden', !sources.length);
   $('sources').innerHTML = sources.slice(0, 6).map(s => `<a href="${esc(s.uri)}" target="_blank">🔗 ${esc(s.title || 'source')}</a>`).join('');
-
   render();
   loadSuggestions(j.wiki_titles || [], j.image_queries || []);
 }
 
-// ---------- Image suggestions ----------
+// ---------- Image suggestions (general subjects) ----------
 async function wikiImages(titles){
   if (!titles.length) return [];
   const url = 'https://en.wikipedia.org/w/api.php?action=query&format=json&origin=*&redirects=1&prop=pageimages&piprop=thumbnail&pithumbsize=1280&titles=' + encodeURIComponent(titles.join('|'));
@@ -653,7 +890,7 @@ async function wikiImages(titles){
   return Object.values(d.query?.pages || {}).filter(p => p.thumbnail).map(p => ({ src: p.thumbnail.source, label: p.title }));
 }
 async function commonsImages(q){
-  const url = 'https://commons.wikimedia.org/w/api.php?action=query&format=json&origin=*&generator=search&gsrnamespace=6&gsrlimit=6&prop=imageinfo&iiprop=url|mime&iiurlwidth=1280&gsrsearch=' + encodeURIComponent(q);
+  const url = 'https://commons.wikimedia.org/w/api.php?action=query&format=json&origin=*&generator=search&gsrnamespace=6&gsrlimit=4&prop=imageinfo&iiprop=url|mime&iiurlwidth=1280&gsrsearch=' + encodeURIComponent(q);
   const d = await (await fetch(url)).json();
   return Object.values(d.query?.pages || {})
     .filter(p => p.imageinfo && /jpeg|png|webp/.test(p.imageinfo[0].mime))
@@ -664,11 +901,20 @@ async function loadSuggestions(titles, queries){
   $('imgLinks').innerHTML = queries.map(q =>
     `<a target="_blank" href="https://www.google.com/search?tbm=isch&q=${encodeURIComponent(q)}">🔎 ${esc(q)}</a>`).join('');
   $('imgGrid').innerHTML = '<p class="hint" style="grid-column:1/-1">Finding images...</p>';
-  const jobs = [wikiImages(titles), ...titles.slice(0, 2).map(commonsImages), ...queries.slice(0, 1).map(commonsImages)];
-  const results = await Promise.allSettled(jobs);
+
+  const subjects = [...titles.slice(0, 4).map(t => t.replace(/\s*\(.*?\)/g, '')), ...queries.slice(0, 4)];
+  const results = await Promise.allSettled([wikiImages(titles), ...subjects.map(commonsImages)]);
+  const lists = results.map(r => r.status === 'fulfilled' ? r.value : []);
+
+  // Mix results so every subject gets a turn
   const seen = new Set(); suggestions = [];
-  results.forEach(r => { if (r.status === 'fulfilled') r.value.forEach(i => { if (!seen.has(i.src)){ seen.add(i.src); suggestions.push(i); } }); });
-  suggestions = suggestions.slice(0, 12);
+  for (let round = 0; round < 6 && suggestions.length < 18; round++){
+    lists.forEach(l => {
+      const it = l[round];
+      if (it && !seen.has(it.src) && suggestions.length < 18){ seen.add(it.src); suggestions.push(it); }
+    });
+  }
+
   $('imgGrid').innerHTML = suggestions.length
     ? suggestions.map((s, i) => `<img src="${esc(s.src)}" crossorigin="anonymous" loading="lazy" alt="${esc(s.label)}" data-i="${i}">`).join('')
     : '<p class="hint" style="grid-column:1/-1">No free images found. Use the Google Images links below.</p>';
@@ -676,8 +922,6 @@ async function loadSuggestions(titles, queries){
     img.onclick = () => {
       $('imgGrid').querySelectorAll('img').forEach(x => x.classList.remove('active'));
       img.classList.add('active'); setPhoto(suggestions[img.dataset.i].src, true);
-      window.scrollTo({ top: $('stage').offsetTop - 80, behavior: 'smooth' });
-      toast('Photo applied ✅');
     };
     img.onerror = () => img.remove();
   });
@@ -687,7 +931,7 @@ async function loadSuggestions(titles, queries){
 function getBlob(){
   return new Promise((res, rej) => {
     try{
-      exporting = true; render();                       // render without guide box
+      exporting = true; render();
       canvas.toBlob(b => b ? res(b) : rej(new Error('Export failed')), 'image/jpeg', 0.95);
     }catch(e){ rej(e); }
     finally{ exporting = false; render(); }
@@ -716,11 +960,11 @@ async function copyCaption(silent){
 }
 
 // ---------- Start ----------
-syncSliders();
-Promise.all([document.fonts.load('700 48px Poppins'), document.fonts.load('800 68px Poppins')]).then(() => {
+buildSteppers(); syncSteppers(); updateKeySwitch(); setMode('lock');
+Promise.all([document.fonts.load('700 34px Poppins'), document.fonts.load('800 48px Poppins')]).then(() => {
   loadTemplate(localStorage.getItem('tpl') || 'template.png');
 });
-if (!localStorage.getItem('gkey')) setTimeout(openSettings, 400);
+if (!getKeys()[0] && !getKeys()[1]) setTimeout(openSettings, 400);
 </script>
 </body>
 </html>
