@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Update Machi Studio</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700&display=swap" rel="stylesheet">
+<style>
+  *{box-sizing:border-box}
+  body{margin:0;font-family:Poppins,sans-serif;background:#0b1220;color:#fff;padding:12px;max-width:600px;margin:auto}
+  h1{font-size:20px;text-align:center;color:#ffd21f;margin:8px 0 14px}
+  .card{background:#141d30;border:1px solid #2a3654;border-radius:14px;padding:12px;margin-bottom:12px}
+  label{font-size:13px;color:#aab4cc;display:block;margin:6px 0 4px}
+  textarea,input[type=text],input[type=password]{width:100%;background:#0b1220;color:#fff;border:1px solid #2a3654;border-radius:10px;padding:10px;font-family:inherit;font-size:14px}
+  textarea{min-height:110px}
+  button{width:100%;padding:13px;border:none;border-radius:10px;font-weight:700;font-size:15px;margin-top:8px;font-family:inherit}
+  .yellow{background:#ffd21f;color:#000}
+  .blue{background:#2f6bff;color:#fff}
+  .grey{background:#2a3654;color:#fff}
+  .row{display:flex;gap:8px}
+  .row button{flex:1}
+  canvas{width:100%;border-radius:10px;display:block}
+  input[type=range]{width:100%}
+  #status{font-size:13px;color:#ffd21f;text-align:center;min-height:18px;margin-top:6px}
+  details summary{cursor:pointer;color:#aab4cc;font-size:14px}
+  .hint{font-size:12px;color:#7d89a6}
+  .chk{display:flex;align-items:center;gap:8px;margin-top:8px;font-size:14px}
+</style>
+</head>
+<body>
+
+<h1>⚡ Update Machi Studio</h1>
+
+<div class="card">
+  <details id="settingsBox">
+    <summary>⚙️ Settings (API key & template)</summary>
+    <label>Gemini API Key</label>
+    <input type="password" id="apiKey" placeholder="Paste your key here">
+    <label>Model</label>
+    <input type="text" id="model" value="gemini-2.5-flash">
+    <button class="grey" onclick="saveSettings()">💾 Save Settings</button>
+    <label>Change template (optional, if template.png not uploaded)</label>
+    <input type="file" id="tplFile" accept="image/*">
+  </details>
+</div>
+
+<div class="card">
+  <label>1️⃣ Paste news / tweet text</label>
+  <textarea id="news" placeholder="Paste the tweet or news text here..."></textarea>
+  <button class="yellow" id="genBtn" onclick="generate()">✨ Generate Headline + Caption</button>
+  <div id="status"></div>
+</div>
+
+<div class="card">
+  <label>2️⃣ Upload photo</label>
+  <input type="file" id="photoFile" accept="image/*">
+  <label>Zoom</label><input type="range" id="zoom" min="100" max="300" value="100">
+  <label>Move Left / Right</label><input type="range" id="posX" min="0" max="100" value="50">
+  <label>Move Up / Down</label><input type="range" id="posY" min="0" max="100" value="50">
+</div>
+
+<div class="card">
+  <label>3️⃣ Preview</label>
+  <canvas id="c" width="1080" height="1350"></canvas>
+  <label>Headline (put *stars* around yellow words)</label>
+  <textarea id="headline" style="min-height:80px">*TVK* wins both assembly seats - *Madurantakam* and *Dharapuram* comfortably in assembly *by-elections* in Tamil Nadu !</textarea>
+  <div class="chk"><input type="checkbox" id="breaking"><span>Show 🚨BREAKING</span></div>
+  <div class="row">
+    <button class="blue" onclick="shareImage()">📤 Share</button>
+    <button class="grey" onclick="downloadImage()">⬇️ Download</button>
+  </div>
+</div>
+
+<div class="card">
+  <label>4️⃣ Caption</label>
+  <textarea id="caption" style="min-height:220px"></textarea>
+  <button class="yellow" onclick="copyCaption()">📋 Copy Caption</button>
+</div>
+
+<script>
+// ====== LAYOUT SETTINGS (tweak these if text position needs adjusting) ======
+const W = 1080, H = 1350;
+const TEXT = { centerY: 1165, maxW: 930, maxSize: 46, minSize: 32, maxLines: 4 };
+const YELLOW = '#FFD21F', WHITE = '#FFFFFF';
+// ===========================================================================
+
+const canvas = document.getElementById('c');
+const ctx = canvas.getContext('2d');
+let overlay = null, box = null, photo = null;
+
+const $ = id => document.getElementById(id);
+
+// ---------- Settings ----------
+$('apiKey').value = localStorage.getItem('gkey') || '';
+$('model').value = localStorage.getItem('gmodel') || 'gemini-2.5-flash';
+if (!localStorage.getItem('gkey')) $('settingsBox').open = true;
+
+function saveSettings(){
+  localStorage.setItem('gkey', $('apiKey').value.trim());
+  localStorage.setItem('gmodel', $('model').value.trim());
+  status('✅ Settings saved');
+}
+function status(msg){ $('status').textContent = msg; }
+
+// ---------- Template (green screen) ----------
+function loadTemplate(src){
+  const img = new Image();
+  img.onload = () => { processTemplate(img); render(); };
+  img.onerror = () => status('⚠️ template.png not found. Upload it in Settings.');
+  img.src = src;
+}
+
+function processTemplate(img){
+  const off = document.createElement('canvas');
+  off.width = W; off.height = H;
+  const o = off.getContext('2d');
+  o.drawImage(img, 0, 0, W, H);
+  const d = o.getImageData(0, 0, W, H), p = d.data;
+  let minX = W, minY = H, maxX = 0, maxY = 0;
+  for (let i = 0; i < p.length; i += 4){
+    const r = p[i], g = p[i+1], b = p[i+2];
+    const k = g - Math.max(r, b);          // how "green" the pixel is
+    if (k > 60){
+      p[i+3] = k > 120 ? 0 : Math.round(255 * (1 - (k - 60) / 60));
+      p[i+1] = Math.max(r, b);             // remove green edge glow
+      if (k > 120){
+        const x = (i / 4) % W, y = Math.floor(i / 4 / W);
+        if (x < minX) minX = x; if (x > maxX) maxX = x;
+        if (y < minY) minY = y; if (y > maxY) maxY = y;
+      }
+    }
+  }
+  o.putImageData(d, 0, 0);
+  overlay = off;
+  box = maxX > minX ? { x: minX, y: minY, w: maxX - minX + 1, h: maxY - minY + 1 }
+                    : { x: 0, y: 0, w: W, h: 930 };
+}
+
+$('tplFile').onchange = e => {
+  const f = e.target.files[0]; if (!f) return;
+  const r = new FileReader();
+  r.onload = () => {
+    try { localStorage.setItem('tpl', r.result); } catch(err){ status('⚠️ Template too big to save, will work for this session only'); }
+    loadTemplate(r.result);
+  };
+  r.readAsDataURL(f);
+};
+
+// ---------- Photo ----------
+$('photoFile').onchange = e => {
+  const f = e.target.files[0]; if (!f) return;
+  const img = new Image();
+  img.onload = () => {
+    photo = img;
+    $('zoom').value = 100; $('posX').value = 50; $('posY').value = 50;
+    render();
+  };
+  img.src = URL.createObjectURL(f);
+};
+['zoom','posX','posY','headline','breaking'].forEach(id => $(id).addEventListener('input', render));
+
+// ---------- Drawing ----------
+function render(){
+  ctx.fillStyle = '#0b1220'; ctx.fillRect(0, 0, W, H);
+
+  if (photo && box){
+    const zoom = $('zoom').value / 100;
+    const scale = Math.max(box.w / photo.width, box.h / photo.height) * zoom;
+    const dw = photo.width * scale, dh = photo.height * scale;
+    const dx = box.x - (dw - box.w) * ($('posX').value / 100);
+    const dy = box.y - (dh - box.h) * ($('posY').value / 100);
+    ctx.save();
+    ctx.beginPath(); ctx.rect(box.x, box.y, box.w, box.h); ctx.clip();
+    ctx.drawImage(photo, dx, dy, dw, dh);
+    ctx.restore();
+  }
+  if (overlay) ctx.drawImage(overlay, 0, 0);
+  drawHeadline();
+}
+
+// "*TVK* wins" -> words made of coloured pieces
+function parseHeadline(s){
+  let yellow = false;
+  return s.trim().split(/\s+/).map(word => {
+    const segs = [];
+    word.split(/(\*)/).forEach(part => {
+      if (part === '*') yellow = !yellow;
+      else if (part) segs.push({ t: part, y: yellow });
+    });
+    return segs;
+  }).filter(w => w.length);
+}
+
+function wrap(words, size){
+  ctx.font = `700 ${size}px Poppins`;
+  const space = ctx.measureText(' ').width;
+  const lines = []; let line = [], lineW = 0;
+  words.forEach(w => {
+    const ww = w.reduce((s, seg) => s + ctx.measureText(seg.t).width, 0);
+    const add = line.length ? space + ww : ww;
+    if (lineW + add > TEXT.maxW && line.length){
+      lines.push({ words: line, width: lineW }); line = [w]; lineW = ww;
+    } else { line.push(w); lineW += add; }
+  });
+  if (line.length) lines.push({ words: line, width: lineW });
+  return { lines, space };
+}
+
+function drawHeadline(){
+  const words = parseHeadline($('headline').value);
+  if (!words.length) return;
+  const breaking = $('breaking').checked;
+  const maxLines = breaking ? TEXT.maxLines - 1 : TEXT.maxLines;
+
+  let size = TEXT.maxSize, res = wrap(words, size);
+  while (res.lines.length > maxLines && size > TEXT.minSize){ size -= 2; res = wrap(words, size); }
+
+  const lh = size * 1.38;
+  const all = breaking ? [{ breaking: true }, ...res.lines] : res.lines;
+  let y = TEXT.centerY - (all.length * lh) / 2 + lh / 2;
+
+  ctx.textBaseline = 'middle';
+  ctx.font = `700 ${size}px Poppins`;
+  ctx.shadowColor = 'rgba(0,0,0,0.5)'; ctx.shadowBlur = 6;
+
+  all.forEach(line => {
+    if (line.breaking){
+      const t = '🚨BREAKING';
+      ctx.fillStyle = WHITE;
+      ctx.fillText(t, W/2 - ctx.measureText(t).width / 2, y);
+    } else {
+      let x = W/2 - line.width / 2;
+      line.words.forEach((w, i) => {
+        if (i) x += res.space;
+        w.forEach(seg => {
+          ctx.fillStyle = seg.y ? YELLOW : WHITE;
+          ctx.fillText(seg.t, x, y);
+          x += ctx.measureText(seg.t).width;
+        });
+      });
+    }
+    y += lh;
+  });
+  ctx.shadowBlur = 0;
+}
+
+// ---------- AI ----------
+function buildPrompt(news){
+  return `You write Instagram content for "Update Machi", a Tamil Nadu news page.
+STRICT RULE: Use ONLY facts from the news below. Never invent names, numbers, places or quotes.
+
+NEWS:
+"""${news}"""
+
+Return JSON with these keys:
+- "headline": 15-25 words, simple English, for the image. Wrap 2-4 key words (names, places, parties, numbers, key action) in *stars* to make them yellow. End with " !" (space before !). Do NOT include the word BREAKING.
+- "is_breaking": true only if it is urgent breaking news (arrest, accident, disaster, major verdict, escape, death).
+- "title": catchy caption title, 8-14 words, ends with "!" or uses "BREAKING:" prefix for breaking news.
+- "para1": 2-3 sentences, what happened, who, where.
+- "para2": 2-3 sentences, outcome / reactions / significance.
+- "hashtags": array of exactly 2 hashtags (with #), e.g. place + topic.
+- "keywords": array of 30-40 SEO keywords/phrases (names, places, topic, variations, "Tamil Nadu News Today" style). Do not include "Update Machi".
+
+EXAMPLE headlines:
+"*TVK* wins both assembly seats - *Madurantakam* and *Dharapuram* comfortably in assembly *by-elections* in Tamil Nadu !"
+"*Court* ordered *Anbil Mahesh Poyyamozhi* to spend *15 days* of police custody in *Jail* !"
+
+EXAMPLE caption:
+title: "BREAKING: 17 Inmates Escape from Theni Sub-Jail; 4 Rearrested"
+para1: "In a major security breach, 17 undertrial prisoners escaped from Thekkampatti sub-jail in Theni district after allegedly attacking prison staff. Police have arrested four of the escapees during intensive search operations, while a statewide manhunt is underway to trace the remaining 13 prisoners."
+para2: "Special police teams have been deployed, with vehicle checks intensified across several districts and along the Kerala border. The incident has raised serious questions about prison security as the search continues."
+hashtags: ["#Theni", "#BreakingNews"]
+keywords: ["Theni jail escape", "17 prisoners escape", "Thekkampatti sub jail", "Tamil Nadu breaking news", "Tamil Nadu Police", ...]`;
+}
+
+async function generate(){
+  const key = localStorage.getItem('gkey');
+  const model = localStorage.getItem('gmodel') || 'gemini-2.5-flash';
+  const news = $('news').value.trim();
+  if (!key){ status('⚠️ Add your Gemini API key in Settings first'); $('settingsBox').open = true; return; }
+  if (!news){ status('⚠️ Paste some news text first'); return; }
+
+  $('genBtn').disabled = true; status('⏳ Generating...');
+  try{
+    const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${key}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        contents: [{ parts: [{ text: buildPrompt(news) }] }],
+        generationConfig: { responseMimeType: 'application/json', temperature: 0.7 }
+      })
+    });
+    const data = await res.json();
+    if (data.error) throw new Error(data.error.message);
+    const j = JSON.parse(data.candidates[0].content.parts[0].text);
+
+    $('headline').value = j.headline;
+    $('breaking').checked = !!j.is_breaking;
+    const keywords = [...(j.keywords || []), 'Update Machi'].join(', ');
+    $('caption').value =
+`${j.title}
+
+${j.para1}
+
+${j.para2}
+
+Follow @update.machi ✅️💯
+
+${(j.hashtags || []).join(' ')}
+
+${keywords}`;
+    render();
+    status('✅ Done! Check the headline, upload photo, then share.');
+  } catch(err){
+    status('❌ ' + err.message);
+  }
+  $('genBtn').disabled = false;
+}
+
+// ---------- Export ----------
+function getBlob(){ return new Promise(r => canvas.toBlob(r, 'image/jpeg', 0.95)); }
+
+async function downloadImage(){
+  const blob = await getBlob();
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'update-machi-' + Date.now() + '.jpg';
+  a.click();
+}
+
+async function shareImage(){
+  const blob = await getBlob();
+  const file = new File([blob], 'update-machi.jpg', { type: 'image/jpeg' });
+  copyCaption(true);
+  if (navigator.canShare && navigator.canShare({ files: [file] })){
+    try { await navigator.share({ files: [file] }); } catch(e){}
+  } else downloadImage();
+}
+
+function copyCaption(silent){
+  navigator.clipboard.writeText($('caption').value)
+    .then(() => { if (!silent) status('📋 Caption copied!'); else status('📋 Caption copied, paste it in Instagram'); });
+}
+
+// ---------- Start ----------
+document.fonts.load('700 46px Poppins').then(() => {
+  const saved = localStorage.getItem('tpl');
+  loadTemplate(saved || 'template.png');
+});
+</script>
+</body>
+</html>
