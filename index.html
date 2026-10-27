@@ -5,16 +5,17 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#0d1117">
 <title>Update Machi Studio</title>
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
 :root{--bg:#0d1117;--card:#161b22;--line:#262c36;--text:#e6edf3;--muted:#8b949e;--accent:#ffd21f;--red:#f87171;--green:#4ade80}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,system-ui,sans-serif;font-size:15px}
-header{position:sticky;top:0;z-index:20;display:flex;align-items:center;justify-content:space-between;padding:14px 16px;background:rgba(13,17,23,.92);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
-.brand{font-weight:700;font-size:17px;letter-spacing:-.01em}
+header{position:sticky;top:0;z-index:20;display:flex;align-items:center;justify-content:space-between;padding:14px 16px;background:rgba(13,17,23,.95);backdrop-filter:blur(10px);border-bottom:1px solid var(--line);height:69px}
+.brand{font-weight:700;font-size:17px}
 .brand span{color:var(--accent)}
-.icon-btn{background:#21262d;border:1px solid var(--line);color:var(--text);width:40px;height:40px;border-radius:10px;font-size:18px;cursor:pointer}
-main{max-width:560px;margin:0 auto;padding:16px 14px 70px}
+.icon-btn{background:#21262d;border:1px solid var(--line);color:var(--text);min-width:40px;height:40px;border-radius:10px;font-size:17px;cursor:pointer;padding:0 8px}
+.icon-btn.primary{background:var(--accent);border-color:var(--accent);color:#000}
+main{max-width:560px;margin:0 auto;padding:16px 14px 80px}
 .card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px;margin-bottom:14px}
 .card h2{margin:0 0 14px;font-size:13px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.07em;display:flex;align-items:center;gap:10px}
 .step{background:var(--accent);color:#000;width:22px;height:22px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:12px;font-weight:700}
@@ -37,22 +38,35 @@ textarea{resize:vertical;min-height:90px;line-height:1.5}
 .status{font-size:13px;color:var(--muted);text-align:center;margin-top:10px;min-height:18px}
 .status.err{color:var(--red)}
 .status.ok{color:var(--green)}
-.label{display:block;font-size:12px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin:14px 0 8px}
+.label{display:flex;justify-content:space-between;font-size:12px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin:14px 0 8px}
 .hint{font-size:12px;color:var(--muted);margin:6px 0 0}
 .chips{display:flex;flex-direction:column;gap:8px}
 .chip{text-align:left;background:var(--bg);border:1px solid var(--line);color:var(--text);border-radius:10px;padding:11px 12px;font:500 14px Inter,sans-serif;cursor:pointer;line-height:1.4}
 .chip.active{border-color:var(--accent);background:#1f1a05}
 .chip b{color:var(--accent);font-weight:700}
+.tag{display:inline-block;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);border:1px solid var(--line);border-radius:6px;padding:1px 6px;margin-right:6px;vertical-align:middle}
 .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
 .grid img{width:100%;aspect-ratio:1;object-fit:cover;border-radius:10px;border:2px solid transparent;cursor:pointer;background:#21262d}
 .grid img.active{border-color:var(--accent)}
 .links{display:flex;flex-wrap:wrap;gap:6px}
 .links a,.links button{font:500 13px Inter,sans-serif;color:var(--text);text-decoration:none;background:#21262d;border:1px solid var(--line);padding:7px 11px;border-radius:20px;cursor:pointer}
-canvas{width:100%;border-radius:12px;display:block;background:#000}
 input[type=range]{width:100%;accent-color:var(--accent)}
 .hidden{display:none!important}
 .spinner{width:16px;height:16px;border:2px solid rgba(0,0,0,.3);border-top-color:#000;border-radius:50%;animation:spin .7s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
+
+/* Sticky preview stage */
+.stage{position:sticky;top:69px;z-index:15;background:var(--bg);margin:0 -14px 14px;padding:10px 14px;border-bottom:1px solid var(--line)}
+.stage canvas{display:block;margin:0 auto;width:min(100%,calc(50vh * .8));height:auto;border-radius:12px;background:#000;touch-action:none}
+.stage.small canvas{width:min(100%,calc(28vh * .8))}
+.toolbar{display:flex;align-items:center;justify-content:center;gap:6px;margin-top:10px}
+.seg{display:flex;background:#21262d;border:1px solid var(--line);border-radius:10px;padding:3px}
+.seg button{background:none;border:none;color:var(--muted);font:600 13px Inter,sans-serif;padding:8px 12px;border-radius:8px;cursor:pointer}
+.seg button.active{background:var(--accent);color:#000}
+.seg.full{width:100%}
+.seg.full button{flex:1}
+.gesture-hint{text-align:center;font-size:11px;color:var(--muted);margin-top:6px}
+
 .modal{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:50;display:flex;align-items:flex-end;justify-content:center}
 .sheet{background:var(--card);border:1px solid var(--line);border-radius:18px 18px 0 0;padding:20px 16px 28px;width:100%;max-width:560px;max-height:90vh;overflow:auto}
 .sheet h3{margin:0 0 4px;font-size:18px}
@@ -71,7 +85,7 @@ input[type=range]{width:100%;accent-color:var(--accent)}
   <!-- 1. NEWS -->
   <section class="card">
     <h2><span class="step">1</span>News</h2>
-    <textarea id="news" placeholder="Paste short news text...&#10;e.g. CM Vijay felicitated WorldSkills winners at Secretariat"></textarea>
+    <textarea id="news" placeholder="Paste short news text...&#10;e.g. CM Vijay chairs flood review meeting with collectors"></textarea>
     <div class="toggle">
       <span>🌐 Web search for more context</span>
       <label class="switch"><input type="checkbox" id="useSearch" checked><span class="slider"></span></label>
@@ -81,47 +95,69 @@ input[type=range]{width:100%;accent-color:var(--accent)}
     <div id="status" class="status"></div>
   </section>
 
-  <!-- 2. PREVIEW -->
-  <section class="card">
-    <h2><span class="step">2</span>Preview</h2>
+  <!-- STICKY PREVIEW -->
+  <div class="stage" id="stage">
     <canvas id="c" width="1080" height="1350"></canvas>
-    <div class="row">
-      <button class="btn btn-primary" onclick="shareImage()">📤 Share</button>
-      <button class="btn btn-dark" onclick="downloadImage()">⬇️ Save</button>
+    <div class="toolbar">
+      <div class="seg">
+        <button id="modePhoto" class="active" onclick="setMode('photo')">🖼 Photo</button>
+        <button id="modeText" onclick="setMode('text')">🔤 Text</button>
+      </div>
+      <button class="icon-btn" onclick="resetCurrent()" title="Reset">↺</button>
+      <button class="icon-btn" onclick="toggleStage()" title="Resize preview">⤡</button>
+      <button class="icon-btn" onclick="downloadImage()" title="Save">⬇️</button>
+      <button class="icon-btn primary" onclick="shareImage()" title="Share">📤</button>
     </div>
-  </section>
+    <div class="gesture-hint" id="gestureHint">Photo: drag to move · pinch to zoom</div>
+  </div>
 
-  <!-- 3. IMAGE TEXT -->
+  <!-- 2. IMAGE TEXT -->
   <section class="card">
-    <h2><span class="step">3</span>Image Text</h2>
+    <h2><span class="step">2</span>Image Text</h2>
     <div id="optBox" class="hidden">
       <span class="label" style="margin-top:0">Pick a headline</span>
       <div id="headlineOptions" class="chips"></div>
       <span class="label">Edit</span>
     </div>
-    <textarea id="headline" style="min-height:70px">*CM Vijay* felicitates *WorldSkills* medal winners at *Secretariat* !</textarea>
+    <textarea id="headline" style="min-height:70px">*CM Vijay* chairs meeting with *17 Collectors* on flood safety !</textarea>
     <p class="hint">Wrap words in *stars* to make them yellow.</p>
     <div class="toggle">
-      <span>🚨 Show BREAKING</span>
-      <label class="switch"><input type="checkbox" id="breaking"><span class="slider"></span></label>
+      <span>🏷️ Headlines</span>
+      <label class="switch"><input type="checkbox" id="titleOn" autocomplete="off"><span class="slider"></span></label>
     </div>
+    <input type="text" id="titleText" class="hidden" placeholder="e.g. BREAKING / FLOOD ALERT / BOX OFFICE" autocomplete="off">
+  </section>
+
+  <!-- 3. TEXT STYLE -->
+  <section class="card">
+    <h2><span class="step">3</span>Text Style</h2>
+    <span class="label" style="margin-top:0">Alignment</span>
+    <div class="seg full">
+      <button data-align="left" onclick="setAlign('left')">⬅ Left</button>
+      <button data-align="center" onclick="setAlign('center')">↔ Center</button>
+      <button data-align="right" onclick="setAlign('right')">Right ➡</button>
+    </div>
+    <span class="label">Text size <span id="vSize"></span></span><input type="range" id="tsSize" min="24" max="110">
+    <span class="label">Headlines title size <span id="vTitle"></span></span><input type="range" id="tsTitle" min="30" max="150">
+    <span class="label">Up ↕ Down</span><input type="range" id="tsY" min="900" max="1340">
+    <span class="label">Left ↔ Right</span><input type="range" id="tsX" min="150" max="930">
+    <span class="label">Text width</span><input type="range" id="tsW" min="400" max="1060">
+    <span class="label">Line spacing</span><input type="range" id="tsLh" min="100" max="200">
+    <button class="btn btn-dark" onclick="resetText()" style="margin-top:14px">↺ Reset text style</button>
+    <p class="hint">Tip: switch to 🔤 Text mode on the preview, then drag to move and pinch to resize. Settings are saved automatically.</p>
   </section>
 
   <!-- 4. PHOTO -->
   <section class="card">
     <h2><span class="step">4</span>Photo</h2>
+    <label class="btn btn-dark" for="photoFile">📁 Upload from phone</label>
+    <input type="file" id="photoFile" accept="image/*" hidden>
     <div id="suggestBox" class="hidden">
-      <span class="label" style="margin-top:0">Suggested images · tap to use</span>
+      <span class="label">Suggested images · tap to use</span>
       <div id="imgGrid" class="grid"></div>
       <span class="label">Search Google Images</span>
       <div id="imgLinks" class="links"></div>
-      <div style="height:14px"></div>
     </div>
-    <label class="btn btn-dark" for="photoFile">📁 Upload from phone</label>
-    <input type="file" id="photoFile" accept="image/*" hidden>
-    <span class="label">Zoom</span><input type="range" id="zoom" min="100" max="300" value="100">
-    <span class="label">Left ↔ Right</span><input type="range" id="posX" min="0" max="100" value="50">
-    <span class="label">Up ↕ Down</span><input type="range" id="posY" min="0" max="100" value="50">
   </section>
 
   <!-- 5. CAPTION -->
@@ -143,8 +179,8 @@ input[type=range]{width:100%;accent-color:var(--accent)}
     <p class="hint">Saved only on this phone.</p>
     <span class="label">Gemini API Key</span>
     <input type="password" id="apiKey" placeholder="Paste your API key">
-    <span class="label">Model</span>
-    <input type="text" id="model" placeholder="gemini-2.5-flash">
+    <span class="label">Preferred model (optional)</span>
+    <input type="text" id="model" placeholder="auto">
     <button class="btn btn-dark" onclick="findModels()" style="margin-top:8px">🔍 Find available models</button>
     <div id="modelList" class="links" style="margin-top:10px"></div>
     <span class="label">Template (only if not uploaded to GitHub)</span>
@@ -159,31 +195,31 @@ input[type=range]{width:100%;accent-color:var(--accent)}
 <div id="toast" class="toast"></div>
 
 <script>
-// ===== LAYOUT (tweak if text position needs adjusting) =====
+// ================= CONFIG =================
 const W = 1080, H = 1350;
-const TEXT = { centerY: 1165, maxW: 930, maxSize: 48, minSize: 34, maxLines: 3 };
-const YELLOW = '#FFD21F', WHITE = '#FFFFFF';
-const DEFAULT_MODEL = 'gemini-2.5-flash';
-const FALLBACK_MODELS = ['gemini-2.5-flash', 'gemini-2.5-flash-lite', 'gemini-2.0-flash'];
-// ===========================================================
+const DEFAULT_TS = { cx: 540, cy: 1120, size: 48, titleSize: 68, width: 930, lh: 1.38, align: 'center' };
+const YELLOW = '#FFD21F', WHITE = '#FFFFFF', SANDAL = '#F2D3A0';
+const DEFAULT_MODEL = 'gemini-3.8-flash';
+// ==========================================
 
 const $ = id => document.getElementById(id);
 const canvas = $('c'), ctx = canvas.getContext('2d');
+const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+const esc = s => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+
 let overlay = null, box = null, photo = null;
+let ph = { s: 1, x: 0, y: 0 };                                   // photo transform
+let ts = Object.assign({}, DEFAULT_TS, JSON.parse(localStorage.getItem('textStyle') || '{}')); // text style
+let mode = 'photo', exporting = false, lastTextBox = null;
 let ctrl = null, cancelled = false, timerInt = null, t0 = 0, curLabel = '';
 let suggestions = [];
-
-const esc = s => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 
 // ---------- UI helpers ----------
 function toast(msg){
   const t = $('toast'); t.textContent = msg; t.classList.add('show');
   clearTimeout(t._h); t._h = setTimeout(() => t.classList.remove('show'), 2500);
 }
-function setStatus(msg, type){
-  const s = $('status'); s.textContent = msg;
-  s.className = 'status' + (type ? ' ' + type : '');
-}
+function setStatus(msg, type){ const s = $('status'); s.textContent = msg; s.className = 'status' + (type ? ' ' + type : ''); }
 function setLabel(l){ curLabel = l; setStatus(`${l} ${Math.round((Date.now() - t0) / 1000)}s`); }
 function setBusy(b){
   $('genBtn').disabled = b;
@@ -192,17 +228,27 @@ function setBusy(b){
   clearInterval(timerInt);
   if (b){ t0 = Date.now(); timerInt = setInterval(() => setLabel(curLabel), 1000); }
 }
+function setMode(m){
+  mode = m;
+  $('modePhoto').classList.toggle('active', m === 'photo');
+  $('modeText').classList.toggle('active', m === 'text');
+  $('gestureHint').textContent = m === 'photo' ? 'Photo: drag to move · pinch to zoom' : 'Text: drag to move · pinch to resize';
+  render();
+}
+function toggleStage(){ $('stage').classList.toggle('small'); }
+function resetCurrent(){ if (mode === 'photo'){ ph = { s: 1, x: 0, y: 0 }; render(); } else resetText(); }
 
 // ---------- Settings ----------
 function openSettings(){
   $('apiKey').value = localStorage.getItem('gkey') || '';
-  $('model').value = localStorage.getItem('gmodel') || DEFAULT_MODEL;
+  $('model').value = localStorage.getItem('gmodel') || '';
   $('settings').classList.remove('hidden');
 }
 function closeSettings(){ $('settings').classList.add('hidden'); }
 function saveSettings(){
   localStorage.setItem('gkey', $('apiKey').value.trim());
-  localStorage.setItem('gmodel', $('model').value.trim() || DEFAULT_MODEL);
+  localStorage.setItem('gmodel', $('model').value.trim());
+  localStorage.removeItem('gmodels');
   closeSettings(); toast('✅ Settings saved');
 }
 async function findModels(){
@@ -210,11 +256,8 @@ async function findModels(){
   if (!key) return toast('Paste API key first');
   $('modelList').innerHTML = '<span class="hint">Loading...</span>';
   try{
-    const d = await (await fetch(`https://generativelanguage.googleapis.com/v1beta/models?pageSize=200&key=${key}`)).json();
-    if (d.error) throw new Error(d.error.message);
-    const list = d.models
-      .filter(m => (m.supportedGenerationMethods || []).includes('generateContent') && /flash/.test(m.name) && !/image|tts|audio|live|embed/.test(m.name))
-      .map(m => m.name.replace('models/', ''));
+    localStorage.removeItem('gmodels');
+    const list = await getModels(key);
     $('modelList').innerHTML = list.map(n => `<button onclick="$('model').value='${n}';toast('Selected ${n}')">${n}</button>`).join('') || '<span class="hint">No flash models found</span>';
   }catch(e){ $('modelList').innerHTML = `<span class="hint" style="color:var(--red)">${esc(e.message)}</span>`; }
 }
@@ -258,7 +301,7 @@ $('tplFile').onchange = e => {
 function setPhoto(src, cors){
   const img = new Image();
   if (cors) img.crossOrigin = 'anonymous';
-  img.onload = () => { photo = img; $('zoom').value = 100; $('posX').value = 50; $('posY').value = 50; render(); };
+  img.onload = () => { photo = img; ph = { s: 1, x: 0, y: 0 }; setMode('photo'); };
   img.onerror = () => toast('Could not load image. Save it & upload instead.');
   img.src = src;
 }
@@ -267,74 +310,179 @@ $('photoFile').onchange = e => {
   document.querySelectorAll('.grid img').forEach(x => x.classList.remove('active'));
   setPhoto(URL.createObjectURL(f), false);
 };
-['zoom','posX','posY','headline','breaking'].forEach(id => $(id).addEventListener('input', render));
+
+// ---------- Text style controls ----------
+const SLIDERS = { tsSize: ['size', 1], tsTitle: ['titleSize', 1], tsY: ['cy', 1], tsX: ['cx', 1], tsW: ['width', 1], tsLh: ['lh', 100] };
+function syncSliders(){
+  for (const id in SLIDERS){ const [k, m] = SLIDERS[id]; $(id).value = Math.round(ts[k] * m); }
+  $('vSize').textContent = Math.round(ts.size);
+  $('vTitle').textContent = Math.round(ts.titleSize);
+  document.querySelectorAll('[data-align]').forEach(b => b.classList.toggle('active', b.dataset.align === ts.align));
+}
+function saveTS(){ localStorage.setItem('textStyle', JSON.stringify(ts)); }
+for (const id in SLIDERS){
+  $(id).addEventListener('input', () => {
+    const [k, m] = SLIDERS[id]; ts[k] = $(id).value / m;
+    $('vSize').textContent = Math.round(ts.size); $('vTitle').textContent = Math.round(ts.titleSize);
+    saveTS(); scheduleRender();
+  });
+}
+function setAlign(a){ ts.align = a; saveTS(); syncSliders(); render(); }
+function resetText(){ ts = Object.assign({}, DEFAULT_TS); saveTS(); syncSliders(); render(); toast('Text style reset'); }
+
+$('headline').addEventListener('input', scheduleRender);
+$('titleText').addEventListener('input', scheduleRender);
+$('titleOn').checked = false; // always off on start
+$('titleOn').addEventListener('change', () => {
+  $('titleText').classList.toggle('hidden', !$('titleOn').checked);
+  if ($('titleOn').checked) $('titleText').focus();
+  render();
+});
 
 // ---------- Drawing ----------
+let raf = 0;
+function scheduleRender(){ if (!raf) raf = requestAnimationFrame(() => { raf = 0; render(); }); }
+
 function render(){
   ctx.fillStyle = '#0b1220'; ctx.fillRect(0, 0, W, H);
   if (photo && box){
-    const zoom = $('zoom').value / 100;
-    const scale = Math.max(box.w / photo.width, box.h / photo.height) * zoom;
-    const dw = photo.width * scale, dh = photo.height * scale;
-    const dx = box.x - (dw - box.w) * ($('posX').value / 100);
-    const dy = box.y - (dh - box.h) * ($('posY').value / 100);
+    const cover = Math.max(box.w / photo.width, box.h / photo.height);
+    const sc = cover * ph.s, dw = photo.width * sc, dh = photo.height * sc;
+    const cx = box.x + box.w / 2 + ph.x, cy = box.y + box.h / 2 + ph.y;
     ctx.save(); ctx.beginPath(); ctx.rect(box.x, box.y, box.w, box.h); ctx.clip();
-    ctx.drawImage(photo, dx, dy, dw, dh); ctx.restore();
+    ctx.drawImage(photo, cx - dw / 2, cy - dh / 2, dw, dh); ctx.restore();
   }
   if (overlay) ctx.drawImage(overlay, 0, 0);
-  drawHeadline();
+  drawText();
 }
+
 function parseHeadline(s){
   let yellow = false;
   return s.trim().split(/\s+/).map(word => {
     const segs = [];
     word.split(/(\*)/).forEach(part => {
       if (part === '*') yellow = !yellow;
-      else if (part) segs.push({ t: part, y: yellow });
+      else if (part) segs.push({ t: part, c: yellow ? YELLOW : WHITE });
     });
     return segs;
   }).filter(w => w.length);
 }
-function wrap(words, size){
-  ctx.font = `700 ${size}px Poppins`;
+
+function wrap(words, size, weight){
+  ctx.font = `${weight} ${size}px Poppins`;
   const space = ctx.measureText(' ').width;
   const lines = []; let line = [], lw = 0;
   words.forEach(w => {
     const ww = w.reduce((s, seg) => s + ctx.measureText(seg.t).width, 0);
     const add = line.length ? space + ww : ww;
-    if (lw + add > TEXT.maxW && line.length){ lines.push({ words: line, width: lw }); line = [w]; lw = ww; }
+    if (lw + add > ts.width && line.length){ lines.push({ words: line, width: lw }); line = [w]; lw = ww; }
     else { line.push(w); lw += add; }
   });
   if (line.length) lines.push({ words: line, width: lw });
   return { lines, space };
 }
-function drawHeadline(){
-  const words = parseHeadline($('headline').value);
-  if (!words.length) return;
-  const breaking = $('breaking').checked;
-  const maxLines = breaking ? TEXT.maxLines - 1 : TEXT.maxLines;
-  let size = TEXT.maxSize, res = wrap(words, size);
-  while (res.lines.length > maxLines && size > TEXT.minSize){ size -= 2; res = wrap(words, size); }
-  const lh = size * 1.38;
-  const all = breaking ? [{ breaking: true }, ...res.lines] : res.lines;
-  let y = TEXT.centerY - (all.length * lh) / 2 + lh / 2;
-  ctx.textBaseline = 'middle'; ctx.font = `700 ${size}px Poppins`;
+
+function drawText(){
+  const rows = [];
+  const titleTxt = $('titleText').value.trim();
+  if ($('titleOn').checked && titleTxt){
+    const words = titleTxt.split(/\s+/).map(t => [{ t, c: SANDAL }]);
+    const r = wrap(words, ts.titleSize, 800);
+    r.lines.forEach(l => rows.push({ ...l, size: ts.titleSize, weight: 800, space: r.space, lh: ts.titleSize * 1.2 }));
+  }
+  const hw = parseHeadline($('headline').value);
+  if (hw.length){
+    if (rows.length) rows.push({ gap: ts.size * 0.3 });
+    const r = wrap(hw, ts.size, 700);
+    r.lines.forEach(l => rows.push({ ...l, size: ts.size, weight: 700, space: r.space, lh: ts.size * ts.lh }));
+  }
+  if (!rows.length){ lastTextBox = null; return; }
+
+  const total = rows.reduce((s, r) => s + (r.gap || r.lh), 0);
+  let y = ts.cy - total / 2;
+  ctx.textBaseline = 'middle';
   ctx.shadowColor = 'rgba(0,0,0,0.5)'; ctx.shadowBlur = 6;
-  all.forEach(line => {
-    if (line.breaking){
-      const t = '🚨BREAKING'; ctx.fillStyle = WHITE;
-      ctx.fillText(t, W/2 - ctx.measureText(t).width / 2, y);
-    } else {
-      let x = W/2 - line.width / 2;
-      line.words.forEach((w, i) => {
-        if (i) x += res.space;
-        w.forEach(seg => { ctx.fillStyle = seg.y ? YELLOW : WHITE; ctx.fillText(seg.t, x, y); x += ctx.measureText(seg.t).width; });
-      });
-    }
-    y += lh;
+
+  rows.forEach(r => {
+    if (r.gap){ y += r.gap; return; }
+    const yc = y + r.lh / 2;
+    ctx.font = `${r.weight} ${r.size}px Poppins`;
+    let x = ts.align === 'left' ? ts.cx - ts.width / 2
+          : ts.align === 'right' ? ts.cx + ts.width / 2 - r.width
+          : ts.cx - r.width / 2;
+    r.words.forEach((w, i) => {
+      if (i) x += r.space;
+      w.forEach(seg => { ctx.fillStyle = seg.c; ctx.fillText(seg.t, x, yc); x += ctx.measureText(seg.t).width; });
+    });
+    y += r.lh;
   });
   ctx.shadowBlur = 0;
+
+  // Dashed guide box in Text mode (not exported)
+  lastTextBox = { x: ts.cx - ts.width / 2, y: ts.cy - total / 2, w: ts.width, h: total };
+  if (mode === 'text' && !exporting){
+    ctx.save(); ctx.setLineDash([14, 10]); ctx.lineWidth = 3; ctx.strokeStyle = 'rgba(255,210,31,0.9)';
+    ctx.strokeRect(lastTextBox.x - 12, lastTextBox.y - 12, lastTextBox.w + 24, lastTextBox.h + 24);
+    ctx.restore();
+  }
 }
+
+// ---------- Touch gestures (drag + pinch) ----------
+const pts = new Map(); let g = null;
+function toCanvas(e){
+  const r = canvas.getBoundingClientRect();
+  return { x: (e.clientX - r.left) * W / r.width, y: (e.clientY - r.top) * H / r.height };
+}
+function gInfo(){
+  const p = [...pts.values()];
+  const c = { x: p.reduce((s, q) => s + q.x, 0) / p.length, y: p.reduce((s, q) => s + q.y, 0) / p.length };
+  const d = p.length > 1 ? Math.hypot(p[0].x - p[1].x, p[0].y - p[1].y) : 0;
+  return { n: p.length, c, d };
+}
+function startGesture(){
+  if (!pts.size){ g = null; return; }
+  const i = gInfo();
+  g = { ...i, ph: { ...ph }, ts: { ...ts } };
+}
+function moveGesture(){
+  if (!g) return;
+  const i = gInfo();
+  if (i.n !== g.n){ startGesture(); return; }
+  const dx = i.c.x - g.c.x, dy = i.c.y - g.c.y;
+  const ratio = (g.n > 1 && g.d > 0) ? i.d / g.d : 1;
+
+  if (mode === 'photo'){
+    if (!photo || !box) return;
+    const bcx = box.x + box.w / 2, bcy = box.y + box.h / 2;
+    const ns = clamp(g.ph.s * ratio, 0.3, 8), k = ns / g.ph.s;
+    ph.s = ns;
+    ph.x = i.c.x - bcx - (g.c.x - bcx - g.ph.x) * k;
+    ph.y = i.c.y - bcy - (g.c.y - bcy - g.ph.y) * k;
+  } else {
+    ts.cx = clamp(g.ts.cx + dx, 0, W);
+    ts.cy = clamp(g.ts.cy + dy, 0, H);
+    if (g.n > 1){
+      ts.size = clamp(g.ts.size * ratio, 18, 140);
+      ts.titleSize = clamp(g.ts.titleSize * ratio, 20, 180);
+    }
+    syncSliders();
+  }
+  scheduleRender();
+}
+canvas.addEventListener('pointerdown', e => { canvas.setPointerCapture(e.pointerId); pts.set(e.pointerId, toCanvas(e)); startGesture(); });
+canvas.addEventListener('pointermove', e => { if (!pts.has(e.pointerId)) return; pts.set(e.pointerId, toCanvas(e)); moveGesture(); });
+['pointerup', 'pointercancel', 'pointerleave'].forEach(ev => canvas.addEventListener(ev, e => {
+  if (!pts.has(e.pointerId)) return;
+  pts.delete(e.pointerId); startGesture();
+  if (mode === 'text') saveTS();
+}));
+canvas.addEventListener('wheel', e => {   // desktop: scroll wheel zoom
+  e.preventDefault();
+  const f = e.deltaY < 0 ? 1.08 : 1 / 1.08;
+  if (mode === 'photo') ph.s = clamp(ph.s * f, 0.3, 8);
+  else { ts.size = clamp(ts.size * f, 18, 140); ts.titleSize = clamp(ts.titleSize * f, 20, 180); syncSliders(); saveTS(); }
+  scheduleRender();
+}, { passive: false });
 
 // ---------- AI ----------
 function buildPrompt(news, search){
@@ -346,9 +494,11 @@ NEWS:
 """${news}"""
 
 Reply with ONLY a JSON object (no markdown, no backticks) with these keys:
-"headlines": array of 3 different options for the IMAGE text. Each 45-65 characters (8-12 words) so it fits in 2 lines. Wrap 2-3 key words (names, places, numbers, key action) in *stars* to show them in yellow. End with " !" (space before !). Never include the word BREAKING.
-"is_breaking": true only for urgent news (arrest, accident, disaster, death, major verdict, escape).
-"title": catchy caption title, 8-14 words, ends with "!" (use "BREAKING: " prefix for breaking news).
+"headlines": array of EXACTLY 4 options for the IMAGE text, in this order:
+   - options 1 and 2: SHORT, 45-65 characters (8-12 words), fits in 2 lines.
+   - options 3 and 4: LONGER, 75-105 characters (13-18 words), about 3 lines, with more context (who/where/why/numbers).
+   In every option wrap 2-3 key words (names, places, numbers, key action) in *stars* to show them in yellow. End with " !" (space before !). Never include the word BREAKING.
+"title": catchy caption title, 8-14 words, ends with "!" (use "BREAKING: " prefix for urgent news).
 "para1": 2-3 sentences: what happened, who, where.
 "para2": 2-3 sentences: outcome, reactions or significance.
 "hashtags": array of exactly 2 hashtags with # (e.g. place + topic).
@@ -356,9 +506,11 @@ Reply with ONLY a JSON object (no markdown, no backticks) with these keys:
 "wiki_titles": array of up to 4 exact English Wikipedia article titles for the main people/places/events (e.g. "Vijay (actor)", "WorldSkills").
 "image_queries": array of 3 short Google Image search queries to find a good photo for this post.
 
-EXAMPLE headlines:
+EXAMPLE short headlines:
 "*TVK* wins both *Madurantakam* and *Dharapuram* by-elections !"
 "*Court* orders *15 days* police custody for *Anbil Mahesh* !"
+EXAMPLE long headline:
+"*TVK* wins both assembly seats - *Madurantakam* and *Dharapuram* comfortably in assembly *by-elections* in Tamil Nadu !"
 
 EXAMPLE caption:
 "title": "BREAKING: 17 Inmates Escape from Theni Sub-Jail; 4 Rearrested"
@@ -367,12 +519,32 @@ EXAMPLE caption:
 "hashtags": ["#Theni", "#BreakingNews"]`;
 }
 
-async function callGemini(key, model, prompt, search, timeout){
+async function getModels(key){
+  const cached = JSON.parse(localStorage.getItem('gmodels') || 'null');
+  if (cached && cached.list.length && Date.now() - cached.t < 86400000) return cached.list;
+  const d = await (await fetch(`https://generativelanguage.googleapis.com/v1beta/models?pageSize=200&key=${key}`)).json();
+  if (d.error) throw new Error(d.error.message);
+  const ver = n => parseFloat((n.match(/gemini-(\d+(?:\.\d+)?)/) || [0, 0])[1]);
+  const list = (d.models || [])
+    .filter(m => (m.supportedGenerationMethods || []).includes('generateContent'))
+    .map(m => m.name.replace('models/', ''))
+    .filter(n => /^gemini-.*flash/.test(n) && !/image|tts|audio|live|embed/.test(n))
+    .sort((a, b) => (/lite/.test(a) - /lite/.test(b)) || (ver(b) - ver(a)) || (/preview|exp/.test(a) - /preview|exp/.test(b)));
+  localStorage.setItem('gmodels', JSON.stringify({ t: Date.now(), list }));
+  return list;
+}
+function thinkingFor(model){
+  if (/2\.5-flash/.test(model)) return { thinkingBudget: 0 };
+  if (/gemini-[3-9]/.test(model)) return { thinkingLevel: 'low' };
+  return null;
+}
+async function callGemini(key, model, prompt, search, timeout, useThinking){
   ctrl = new AbortController();
   const tm = setTimeout(() => ctrl.abort(), timeout);
   const gc = { temperature: 0.6 };
   if (!search) gc.responseMimeType = 'application/json';
-  if (/2\.5-flash/.test(model)) gc.thinkingConfig = { thinkingBudget: 0 };
+  const th = useThinking ? thinkingFor(model) : null;
+  if (th) gc.thinkingConfig = th;
   const body = { contents: [{ role: 'user', parts: [{ text: prompt }] }], generationConfig: gc };
   if (search) body.tools = [{ google_search: {} }];
   try{
@@ -401,49 +573,58 @@ async function generate(){
   const news = $('news').value.trim();
   if (!news){ toast('Paste news text first'); return; }
 
-  const chosen = localStorage.getItem('gmodel') || DEFAULT_MODEL;
-  const models = [chosen, ...FALLBACK_MODELS.filter(m => m !== chosen)];
-  const modes = $('useSearch').checked ? [true, false] : [false];
-  cancelled = false; setBusy(true);
-  let lastErr = '';
+  cancelled = false; setBusy(true); setLabel('⏳ Checking models...');
+  let models;
+  try { models = await getModels(key); }
+  catch(e){ setBusy(false); setStatus('❌ ' + e.message, 'err'); return; }
+  if (!models.length) models = [DEFAULT_MODEL];
+  const chosen = localStorage.getItem('gmodel');
+  if (chosen && models.includes(chosen)) models = [chosen, ...models.filter(m => m !== chosen)];
+  models = models.slice(0, 4);
 
+  const modes = $('useSearch').checked ? [true, false] : [false];
+  let lastErr = '';
   outer:
   for (const model of models){
     for (const search of modes){
       if (cancelled) break outer;
       setLabel(`⏳ ${model}${search ? ' + web search' : ''}...`);
+      const prompt = buildPrompt(news, search), t = search ? 45000 : 25000;
       try{
-        const out = await callGemini(key, model, buildPrompt(news, search), search, search ? 45000 : 25000);
+        let out;
+        try { out = await callGemini(key, model, prompt, search, t, true); }
+        catch(e){
+          if (/thinking/i.test(e.message) && !cancelled) out = await callGemini(key, model, prompt, search, t, false);
+          else throw e;
+        }
         applyResult(out.json, out.sources);
         setBusy(false);
         setStatus(`✅ Done · ${model}${search ? ' + web search' : ''}`, 'ok');
         return;
       }catch(e){
-        lastErr = `${model}: ${e.message}`;
-        console.warn(lastErr);
+        lastErr = `${model}: ${e.message}`; console.warn(lastErr);
         if (/API key/i.test(e.message)) break outer;
+        if (/no longer available|not found/i.test(e.message)){ localStorage.removeItem('gmodels'); continue outer; }
       }
     }
   }
+  localStorage.removeItem('gmodels');
   setBusy(false);
   setStatus(cancelled ? 'Cancelled' : '❌ ' + lastErr, cancelled ? '' : 'err');
 }
 function cancelGen(){ cancelled = true; if (ctrl) ctrl.abort(); }
 
 function applyResult(j, sources){
-  // Headlines
-  const hs = (j.headlines || [j.headline]).filter(Boolean);
+  const hs = (j.headlines || []).filter(Boolean).slice(0, 4);
   $('optBox').classList.toggle('hidden', !hs.length);
   $('headlineOptions').innerHTML = hs.map((h, i) =>
-    `<button class="chip${i === 0 ? ' active' : ''}" data-i="${i}">${esc(h).replace(/\*(.+?)\*/g, '<b>$1</b>')}</button>`).join('');
+    `<button class="chip${i === 0 ? ' active' : ''}" data-i="${i}"><span class="tag">${i < 2 ? 'Short' : 'Long'}</span>${esc(h).replace(/\*(.+?)\*/g, '<b>$1</b>')}</button>`).join('');
   $('headlineOptions').querySelectorAll('.chip').forEach(b => b.onclick = () => {
     $('headlineOptions').querySelectorAll('.chip').forEach(x => x.classList.remove('active'));
     b.classList.add('active'); $('headline').value = hs[b.dataset.i]; render();
   });
   if (hs[0]) $('headline').value = hs[0];
-  $('breaking').checked = !!j.is_breaking;
 
-  // Caption
   const kw = [...(j.keywords || []), 'Update Machi'].join(', ');
   $('caption').value = `${j.title || ''}
 
@@ -457,7 +638,6 @@ ${(j.hashtags || []).join(' ')}
 
 ${kw}`;
 
-  // Sources
   $('sourcesBox').classList.toggle('hidden', !sources.length);
   $('sources').innerHTML = sources.slice(0, 6).map(s => `<a href="${esc(s.uri)}" target="_blank">🔗 ${esc(s.title || 'source')}</a>`).join('');
 
@@ -484,13 +664,11 @@ async function loadSuggestions(titles, queries){
   $('imgLinks').innerHTML = queries.map(q =>
     `<a target="_blank" href="https://www.google.com/search?tbm=isch&q=${encodeURIComponent(q)}">🔎 ${esc(q)}</a>`).join('');
   $('imgGrid').innerHTML = '<p class="hint" style="grid-column:1/-1">Finding images...</p>';
-
   const jobs = [wikiImages(titles), ...titles.slice(0, 2).map(commonsImages), ...queries.slice(0, 1).map(commonsImages)];
   const results = await Promise.allSettled(jobs);
   const seen = new Set(); suggestions = [];
   results.forEach(r => { if (r.status === 'fulfilled') r.value.forEach(i => { if (!seen.has(i.src)){ seen.add(i.src); suggestions.push(i); } }); });
   suggestions = suggestions.slice(0, 12);
-
   $('imgGrid').innerHTML = suggestions.length
     ? suggestions.map((s, i) => `<img src="${esc(s.src)}" crossorigin="anonymous" loading="lazy" alt="${esc(s.label)}" data-i="${i}">`).join('')
     : '<p class="hint" style="grid-column:1/-1">No free images found. Use the Google Images links below.</p>';
@@ -498,6 +676,7 @@ async function loadSuggestions(titles, queries){
     img.onclick = () => {
       $('imgGrid').querySelectorAll('img').forEach(x => x.classList.remove('active'));
       img.classList.add('active'); setPhoto(suggestions[img.dataset.i].src, true);
+      window.scrollTo({ top: $('stage').offsetTop - 80, behavior: 'smooth' });
       toast('Photo applied ✅');
     };
     img.onerror = () => img.remove();
@@ -506,7 +685,13 @@ async function loadSuggestions(titles, queries){
 
 // ---------- Export ----------
 function getBlob(){
-  return new Promise((res, rej) => { try { canvas.toBlob(b => b ? res(b) : rej(new Error('Export failed')), 'image/jpeg', 0.95); } catch(e){ rej(e); } });
+  return new Promise((res, rej) => {
+    try{
+      exporting = true; render();                       // render without guide box
+      canvas.toBlob(b => b ? res(b) : rej(new Error('Export failed')), 'image/jpeg', 0.95);
+    }catch(e){ rej(e); }
+    finally{ exporting = false; render(); }
+  });
 }
 async function downloadImage(){
   try{
@@ -531,7 +716,8 @@ async function copyCaption(silent){
 }
 
 // ---------- Start ----------
-document.fonts.load('700 48px Poppins').then(() => {
+syncSliders();
+Promise.all([document.fonts.load('700 48px Poppins'), document.fonts.load('800 68px Poppins')]).then(() => {
   loadTemplate(localStorage.getItem('tpl') || 'template.png');
 });
 if (!localStorage.getItem('gkey')) setTimeout(openSettings, 400);
