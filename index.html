@@ -39,20 +39,20 @@ textarea{resize:vertical;min-height:90px;line-height:1.5}
 .label{display:flex;justify-content:space-between;font-size:12px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin:14px 0 8px}
 .hint{font-size:12px;color:var(--muted);margin:8px 0 0}
 .chips{display:flex;flex-direction:column;gap:8px}
-.chip{text-align:left;background:var(--bg);border:1px solid var(--line);color:var(--text);border-radius:10px;padding:11px 12px;font:500 14px Inter,sans-serif;cursor:pointer;line-height:1.4}
+.chip{text-align:left;background:var(--bg);border:1px solid var(--line);color:var(--text);border-radius:10px;padding:11px 12px;font:500 14px Inter,sans-serif;cursor:pointer;line-height:1.45}
 .chip.active{border-color:var(--accent);background:#1f1a05}
 .chip b{color:var(--accent);font-weight:700}
-.tag{display:inline-block;font-size:10px;font-weight:700;text-transform:uppercase;color:var(--muted);border:1px solid var(--line);border-radius:6px;padding:1px 6px;margin-right:6px;vertical-align:middle}
+.optgroup{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin:8px 0 0}
 .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
 .grid img{width:100%;aspect-ratio:1;object-fit:cover;border-radius:10px;border:2px solid transparent;cursor:pointer;background:#21262d}
 .grid img.active{border-color:var(--accent)}
 .links{display:flex;flex-wrap:wrap;gap:6px}
 .links a,.links button{font:500 13px Inter,sans-serif;color:var(--text);text-decoration:none;background:#21262d;border:1px solid var(--line);padding:7px 11px;border-radius:20px;cursor:pointer}
+.links button.active{background:var(--accent);color:#000;border-color:var(--accent)}
 .hidden{display:none!important}
 .spinner{width:16px;height:16px;border:2px solid rgba(0,0,0,.3);border-top-color:#000;border-radius:50%;animation:spin .7s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
 
-/* Sticky stage */
 .stage{position:sticky;top:69px;z-index:15;background:var(--bg);margin:0 -14px 14px;padding:10px 14px 10px;border-bottom:1px solid var(--line)}
 .stage canvas{display:block;margin:0 auto;width:min(100%,calc(40vh * .8));height:auto;border-radius:12px;background:#000}
 .stage.small canvas{width:min(100%,calc(24vh * .8))}
@@ -71,22 +71,39 @@ textarea{resize:vertical;min-height:90px;line-height:1.5}
 .panel{display:none}
 .panel.active{display:block}
 
-/* Steppers */
-.stepper{display:flex;align-items:center;justify-content:space-between;padding:9px 0;border-bottom:1px solid var(--line)}
-.stepper:last-child{border-bottom:none}
-.stepper span{font-size:14px}
+.stepper,.color-row{display:flex;align-items:center;justify-content:space-between;padding:9px 0;border-bottom:1px solid var(--line)}
+.stepper span,.color-row span{font-size:14px}
 .ctrl{display:flex;align-items:center;gap:6px}
 .ctrl button{width:42px;height:38px;border-radius:9px;background:#21262d;border:1px solid var(--line);color:var(--text);font-size:15px;cursor:pointer;touch-action:manipulation;user-select:none;-webkit-user-select:none}
 .ctrl button:active{background:#30363d}
 .ctrl output{min-width:54px;text-align:center;font:600 14px Inter,sans-serif;color:var(--accent)}
+input[type=color]{width:56px;height:38px;border:1px solid var(--line);border-radius:9px;background:#21262d;padding:3px}
 
 .xbox{background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:12px;margin-top:12px}
 .xbox .who{font-size:13px;color:var(--muted);margin-bottom:6px}
 .xbox .txt{font-size:14px;line-height:1.5;margin-bottom:10px;white-space:pre-wrap}
 
+.sgroup{margin-top:14px}
+.shead{display:flex;justify-content:space-between;align-items:center;font-size:14px;font-weight:600;margin-bottom:8px}
+.shead a{font-size:12px;color:var(--muted);text-decoration:none;border:1px solid var(--line);padding:4px 10px;border-radius:14px}
+.hrow{display:flex;gap:8px;overflow-x:auto;padding-bottom:4px;scrollbar-width:none}
+.hrow::-webkit-scrollbar{display:none}
+.hrow img{width:100px;height:100px;flex-shrink:0;object-fit:cover;border-radius:10px;border:2px solid transparent;background:#21262d;cursor:pointer}
+.hrow img.active{border-color:var(--accent)}
+
 .modal{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:50;display:flex;align-items:flex-end;justify-content:center}
+.modal.full{align-items:stretch}
 .sheet{background:var(--card);border:1px solid var(--line);border-radius:18px 18px 0 0;padding:20px 16px 28px;width:100%;max-width:560px;max-height:90vh;overflow:auto}
+.modal.full .sheet{border-radius:0;max-height:none;height:100%;padding-top:14px}
 .sheet h3{margin:0 0 4px;font-size:18px}
+.colhead{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+#colCanvas{display:block;margin:0 auto;border-radius:10px;background:#000;touch-action:none;max-width:100%;height:auto}
+.cthumbs{display:flex;gap:10px;overflow-x:auto;min-height:20px}
+.cthumb{position:relative;flex-shrink:0;width:76px}
+.cthumb img{width:76px;height:76px;object-fit:cover;border-radius:8px;display:block}
+.cthumb .num{position:absolute;top:4px;left:4px;background:var(--accent);color:#000;font:700 11px Inter,sans-serif;border-radius:50%;width:20px;height:20px;display:flex;align-items:center;justify-content:center}
+.cthumb .acts{display:flex;gap:4px;margin-top:4px}
+.cthumb .acts button{flex:1;background:#21262d;border:1px solid var(--line);color:var(--text);border-radius:6px;font-size:12px;padding:4px 0}
 .toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%) translateY(120px);background:#21262d;border:1px solid var(--line);color:var(--text);padding:12px 18px;border-radius:12px;font-size:14px;z-index:60;transition:.3s;max-width:90%;text-align:center}
 .toast.show{transform:translateX(-50%) translateY(0)}
 </style>
@@ -129,7 +146,6 @@ textarea{resize:vertical;min-height:90px;line-height:1.5}
       <button id="srcText" class="active" onclick="setSource('text')">✍️ Paste Text</button>
       <button id="srcX" onclick="setSource('x')">𝕏 Post Link</button>
     </div>
-
     <div id="xArea" class="hidden">
       <span class="label">X post link</span>
       <div style="display:flex;gap:8px">
@@ -141,13 +157,11 @@ textarea{resize:vertical;min-height:90px;line-height:1.5}
         <div class="who" id="xWho"></div>
         <div class="txt" id="xText"></div>
         <div class="grid" id="xImgs"></div>
-        <p class="hint">Tap an image to use it. The AI will also read text inside the first image.</p>
+        <p class="hint">Tap an image to use it. The AI also reads text inside the first image.</p>
       </div>
     </div>
-
     <span class="label" id="newsLabel">News text</span>
     <textarea id="news" placeholder="Paste short news text...&#10;e.g. CM Vijay fixes base fare for auto rickshaws"></textarea>
-
     <div class="toggle hidden" id="keyRow">
       <span>🔑 API key</span>
       <div class="seg">
@@ -171,13 +185,16 @@ textarea{resize:vertical;min-height:90px;line-height:1.5}
       <div id="headlineOptions" class="chips"></div>
     </div>
     <span class="label">Edit headline</span>
-    <textarea id="headline" style="min-height:70px">*CM Vijay* chairs meeting with *17 Collectors* on flood safety !</textarea>
+    <textarea id="headline" rows="4" style="min-height:124px">*CM Vijay* chairs meeting with *17 Collectors* on flood safety !</textarea>
     <p class="hint">Wrap words in *stars* to make them yellow.</p>
     <div class="toggle">
       <span>🏷️ Headlines</span>
       <label class="switch"><input type="checkbox" id="titleOn" autocomplete="off"><span class="slider"></span></label>
     </div>
-    <input type="text" id="titleText" class="hidden" placeholder="e.g. BREAKING / FLOOD ALERT / BOX OFFICE" autocomplete="off">
+    <div id="titleBox" class="hidden">
+      <input type="text" id="titleText" placeholder="e.g. BREAKING / FLOOD ALERT / BOX OFFICE" autocomplete="off">
+      <div id="titleSteppers" style="margin-top:6px"></div>
+    </div>
   </section>
 
   <!-- ===== STYLE ===== -->
@@ -189,17 +206,19 @@ textarea{resize:vertical;min-height:90px;line-height:1.5}
       <button data-align="right" onclick="setAlign('right')">Right ➡</button>
     </div>
     <div id="steppers" style="margin-top:8px"></div>
+    <div class="color-row"><span>Highlight color</span><input type="color" id="hlColor"></div>
     <button class="btn btn-dark" onclick="resetText()" style="margin-top:12px">↺ Reset to default</button>
     <p class="hint">Tap for small steps, hold for fast change. Saved automatically.</p>
   </section>
 
   <!-- ===== PHOTO ===== -->
   <section class="card panel" data-panel="photo">
-    <label class="btn btn-dark" for="photoFile">📁 Upload from phone</label>
+    <label class="btn btn-dark" for="photoFile">📁 Upload photo</label>
     <input type="file" id="photoFile" accept="image/*" hidden>
+    <button class="btn btn-dark" style="margin-top:8px" onclick="openCollage()">🧩 Make a collage (2–4 photos)</button>
     <div id="suggestBox" class="hidden">
-      <span class="label">Suggested images · tap to use</span>
-      <div id="imgGrid" class="grid"></div>
+      <span class="label">Suggested images · swipe rows sideways</span>
+      <div id="imgGroups"></div>
       <span class="label">Search Google Images</span>
       <div id="imgLinks" class="links"></div>
     </div>
@@ -240,6 +259,47 @@ textarea{resize:vertical;min-height:90px;line-height:1.5}
   </div>
 </div>
 
+<!-- ===== COLLAGE EDITOR ===== -->
+<div id="collage" class="modal full hidden">
+  <div class="sheet">
+    <div class="colhead">
+      <h3>🧩 Collage</h3>
+      <button class="icon-btn" onclick="closeCollage()">✕</button>
+    </div>
+    <canvas id="colCanvas" width="1620" height="1395"></canvas>
+    <p class="hint" style="text-align:center">Drag or pinch inside a box to adjust that photo</p>
+
+    <span class="label">Photos (max 4) · ◀ to reorder</span>
+    <div id="colThumbs" class="cthumbs"></div>
+    <label class="btn btn-dark" for="colFiles" style="margin-top:10px">➕ Add photos from phone</label>
+    <input type="file" id="colFiles" accept="image/*" multiple hidden>
+
+    <div id="colWebBox" class="hidden">
+      <span class="label">Tap to add from suggestions</span>
+      <div id="colWeb" class="hrow"></div>
+    </div>
+
+    <span class="label">Layout</span>
+    <div id="colLayouts" class="links"></div>
+
+    <div class="stepper" style="margin-top:8px"><span>Gap</span>
+      <div class="ctrl"><button id="gapDec">−</button><output id="v_gap"></output><button id="gapInc">+</button></div>
+    </div>
+    <div class="color-row"><span>Gap color</span>
+      <div class="links" id="colColors">
+        <button data-color="#FFFFFF">White</button>
+        <button data-color="#C9A56A">Gold</button>
+        <button data-color="#000000">Black</button>
+        <button data-color="#0B1220">Navy</button>
+      </div>
+    </div>
+    <div class="row">
+      <button class="btn btn-dark" onclick="closeCollage()">Close</button>
+      <button class="btn btn-primary" onclick="useCollage()">✅ Use collage</button>
+    </div>
+  </div>
+</div>
+
 <div id="toast" class="toast"></div>
 
 <script>
@@ -247,32 +307,63 @@ textarea{resize:vertical;min-height:90px;line-height:1.5}
 const W = 1080, H = 1350;
 const MARGIN = 60;                       // left/right guide margin (px)
 const SNAP = 16;                         // snap distance (px)
-const DEFAULT_TS = { cx: 540, cy: 1120, size: 34, titleSize: 48, width: 930, lh: 1.30, align: 'center' };
-const YELLOW = '#FFD21F', WHITE = '#FFFFFF', SANDAL = '#F2D3A0';
+
+// 🎨 COLORS — change these values
+const HIGHLIGHT_COLOR = '#FFE01B';   // yellow highlight words
+const WHITE = '#FFFFFF';             // normal text
+const SANDAL = '#F2D3A0';            // "Headlines" title text
+
+const DEFAULT_TS = { cx: 540, cy: 1120, size: 34, titleSize: 46, width: 930, lh: 1.30, align: 'center', hl: HIGHLIGHT_COLOR };
 const DEFAULT_MODEL = 'gemini-3.8-flash';
-const TS_KEY = 'textStyle_v3';
+const TS_KEY = 'textStyle_v4';
+const COL_SCALE = 1.5;                   // collage resolution multiplier
 const STEPS = {
   size:      { label: 'Text size',    step: 1,    min: 16,  max: 140,  dec: '−', inc: '+', fmt: v => Math.round(v) },
-  titleSize: { label: 'Title size',   step: 2,    min: 20,  max: 180,  dec: '−', inc: '+', fmt: v => Math.round(v) },
+  titleSize: { label: 'Title size',   step: 1,    min: 20,  max: 120,  dec: '−', inc: '+', fmt: v => Math.round(v) },
   cy:        { label: 'Up / Down',    step: 5,    min: 0,   max: H,    dec: '▲', inc: '▼', fmt: v => Math.round(v) },
   cx:        { label: 'Left / Right', step: 5,    min: 0,   max: W,    dec: '◀', inc: '▶', fmt: v => Math.round(v) },
   width:     { label: 'Text width',   step: 10,   min: 300, max: 1060, dec: '−', inc: '+', fmt: v => Math.round(v) },
   lh:        { label: 'Line spacing', step: 0.05, min: 1,   max: 2.2,  dec: '−', inc: '+', fmt: v => v.toFixed(2) }
 };
+const LAYOUTS = {
+  2: [ { n: 'Side by side', r: [[0,0,.5,1],[.5,0,.5,1]] },
+       { n: 'Top / Bottom', r: [[0,0,1,.5],[0,.5,1,.5]] },
+       { n: 'Big left',     r: [[0,0,.62,1],[.62,0,.38,1]] },
+       { n: 'Big right',    r: [[0,0,.38,1],[.38,0,.62,1]] } ],
+  3: [ { n: 'Big left',     r: [[0,0,.5,1],[.5,0,.5,.5],[.5,.5,.5,.5]] },
+       { n: 'Big right',    r: [[0,0,.5,.5],[0,.5,.5,.5],[.5,0,.5,1]] },
+       { n: '3 columns',    r: [[0,0,1/3,1],[1/3,0,1/3,1],[2/3,0,1/3,1]] },
+       { n: 'Big top',      r: [[0,0,1,.55],[0,.55,.5,.45],[.5,.55,.5,.45]] } ],
+  4: [ { n: 'Grid',         r: [[0,0,.5,.5],[.5,0,.5,.5],[0,.5,.5,.5],[.5,.5,.5,.5]] },
+       { n: 'Big left',     r: [[0,0,.6,1],[.6,0,.4,1/3],[.6,1/3,.4,1/3],[.6,2/3,.4,1/3]] },
+       { n: 'Big top',      r: [[0,0,1,.6],[0,.6,1/3,.4],[1/3,.6,1/3,.4],[2/3,.6,1/3,.4]] },
+       { n: '4 columns',    r: [[0,0,.25,1],[.25,0,.25,1],[.5,0,.25,1],[.75,0,.25,1]] } ]
+};
+const ICON = { person: '👤', place: '📍', object: '📦', organisation: '🏛', organization: '🏛', event: '📅' };
 // ==========================================
 
 const $ = id => document.getElementById(id);
 const canvas = $('c'), ctx = canvas.getContext('2d');
 const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
 const esc = s => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-const proxy = u => 'https://wsrv.nl/?url=' + encodeURIComponent(u);
+const enc = encodeURIComponent;
+const proxy = u => 'https://wsrv.nl/?url=' + enc(u);
+const gImg = q => 'https://www.google.com/search?tbm=isch&q=' + enc(q);
+
+function loadTS(){
+  const saved = localStorage.getItem(TS_KEY);
+  if (saved) return Object.assign({}, DEFAULT_TS, JSON.parse(saved));
+  const old = JSON.parse(localStorage.getItem('textStyle_v3') || '{}');
+  delete old.titleSize; delete old.hl;          // apply new title size + colour
+  return Object.assign({}, DEFAULT_TS, old);
+}
 
 let overlay = null, box = null, photo = null;
 let ph = { s: 1, x: 0, y: 0 };
-let ts = Object.assign({}, DEFAULT_TS, JSON.parse(localStorage.getItem(TS_KEY) || '{}'));
+let ts = loadTS();
 let mode = 'lock', exporting = false, lastTextBox = null, guides = [];
 let ctrl = null, cancelled = false, timerInt = null, t0 = 0, curLabel = '';
-let suggestions = [], newsSrc = 'text', xData = null;
+let allImgs = [], newsSrc = 'text', xData = null;
 
 // ---------- UI helpers ----------
 function toast(msg){
@@ -311,13 +402,20 @@ function switchTab(name){
   window.scrollTo({ top: 0 });
 }
 document.querySelectorAll('#tabs button').forEach(b => b.onclick = () => switchTab(b.dataset.tab));
-
 function setSource(s){
   newsSrc = s;
   $('srcText').classList.toggle('active', s === 'text');
   $('srcX').classList.toggle('active', s === 'x');
   $('xArea').classList.toggle('hidden', s !== 'x');
   $('newsLabel').textContent = s === 'x' ? 'Post text (editable)' : 'News text';
+}
+function attachHold(btn, fn){
+  let hold = null, rep = null, repeated = false;
+  const stop = () => { clearTimeout(hold); clearInterval(rep); };
+  btn.addEventListener('pointerdown', () => { repeated = false; hold = setTimeout(() => { repeated = true; rep = setInterval(fn, 70); }, 450); });
+  ['pointerup', 'pointerleave', 'pointercancel'].forEach(ev => btn.addEventListener(ev, stop));
+  btn.addEventListener('click', () => { if (!repeated) fn(); repeated = false; });
+  btn.addEventListener('contextmenu', e => e.preventDefault());
 }
 
 // ---------- API keys ----------
@@ -377,7 +475,7 @@ function processTemplate(img){
   const d = o.getImageData(0, 0, W, H), p = d.data;
   let minX = W, minY = H, maxX = 0, maxY = 0;
   for (let i = 0; i < p.length; i += 4){
-    const r = p[i], g = p[i+1], b = p[i+2], k = g - Math.max(r, b);
+    const r = p[i], g2 = p[i+1], b = p[i+2], k = g2 - Math.max(r, b);
     if (k > 60){
       p[i+3] = k > 120 ? 0 : Math.round(255 * (1 - (k - 60) / 60));
       p[i+1] = Math.max(r, b);
@@ -409,8 +507,9 @@ function setPhoto(src, cors, fallback){
 }
 $('photoFile').onchange = e => {
   const f = e.target.files[0]; if (!f) return;
-  document.querySelectorAll('.grid img').forEach(x => x.classList.remove('active'));
+  document.querySelectorAll('.hrow img, .grid img').forEach(x => x.classList.remove('active'));
   setPhoto(URL.createObjectURL(f), false);
+  e.target.value = '';
 };
 function photoDims(){
   const cover = Math.max(box.w / photo.width, box.h / photo.height);
@@ -418,24 +517,16 @@ function photoDims(){
 }
 
 // ---------- Steppers ----------
-function buildSteppers(){
-  $('steppers').innerHTML = Object.entries(STEPS).map(([k, s]) => `
+function buildSteppers(containerId, keys){
+  $(containerId).innerHTML = keys.map(k => { const s = STEPS[k]; return `
     <div class="stepper"><span>${s.label}</span>
       <div class="ctrl">
         <button data-k="${k}" data-d="-1">${s.dec}</button>
         <output id="v_${k}"></output>
         <button data-k="${k}" data-d="1">${s.inc}</button>
       </div>
-    </div>`).join('');
-  document.querySelectorAll('.ctrl button').forEach(btn => {
-    let hold = null, rep = null, repeated = false;
-    const step = () => bump(btn.dataset.k, +btn.dataset.d);
-    const stop = () => { clearTimeout(hold); clearInterval(rep); };
-    btn.addEventListener('pointerdown', () => { repeated = false; hold = setTimeout(() => { repeated = true; rep = setInterval(step, 70); }, 450); });
-    ['pointerup', 'pointerleave', 'pointercancel'].forEach(ev => btn.addEventListener(ev, stop));
-    btn.addEventListener('click', () => { if (!repeated) step(); repeated = false; });
-    btn.addEventListener('contextmenu', e => e.preventDefault());
-  });
+    </div>`; }).join('');
+  $(containerId).querySelectorAll('.ctrl button').forEach(btn => attachHold(btn, () => bump(btn.dataset.k, +btn.dataset.d)));
 }
 function bump(k, d){
   const s = STEPS[k];
@@ -443,18 +534,20 @@ function bump(k, d){
   saveTS(); syncSteppers(); scheduleRender();
 }
 function syncSteppers(){
-  for (const k in STEPS) $('v_' + k).textContent = STEPS[k].fmt(ts[k]);
+  for (const k in STEPS){ const el = $('v_' + k); if (el) el.textContent = STEPS[k].fmt(ts[k]); }
   document.querySelectorAll('[data-align]').forEach(b => b.classList.toggle('active', b.dataset.align === ts.align));
+  $('hlColor').value = ts.hl;
 }
 function saveTS(){ localStorage.setItem(TS_KEY, JSON.stringify(ts)); }
 function setAlign(a){ ts.align = a; saveTS(); syncSteppers(); render(); }
 function resetText(){ ts = Object.assign({}, DEFAULT_TS); saveTS(); syncSteppers(); render(); toast('Text reset to default'); }
+$('hlColor').addEventListener('input', () => { ts.hl = $('hlColor').value; saveTS(); scheduleRender(); });
 
 $('headline').addEventListener('input', () => scheduleRender());
 $('titleText').addEventListener('input', () => scheduleRender());
 $('titleOn').checked = false;
 $('titleOn').addEventListener('change', () => {
-  $('titleText').classList.toggle('hidden', !$('titleOn').checked);
+  $('titleBox').classList.toggle('hidden', !$('titleOn').checked);
   if ($('titleOn').checked) $('titleText').focus();
   render();
 });
@@ -474,14 +567,13 @@ function render(){
   drawText();
   drawGuides();
 }
-
 function parseHeadline(s){
   let yellow = false;
   return s.trim().split(/\s+/).map(word => {
     const segs = [];
     word.split(/(\*)/).forEach(part => {
       if (part === '*') yellow = !yellow;
-      else if (part) segs.push({ t: part, c: yellow ? YELLOW : WHITE });
+      else if (part) segs.push({ t: part, c: yellow ? ts.hl : WHITE });
     });
     return segs;
   }).filter(w => w.length);
@@ -517,7 +609,7 @@ function drawText(){
   const total = rows.reduce((s, r) => s + (r.gap || r.lh), 0);
   let y = ts.cy - total / 2, minX = Infinity, maxX = -Infinity;
   ctx.textBaseline = 'middle';
-  ctx.shadowColor = 'rgba(0,0,0,0.5)'; ctx.shadowBlur = 6;
+  ctx.shadowColor = 'rgba(0,0,0,0.35)'; ctx.shadowBlur = 4;
   rows.forEach(r => {
     if (r.gap){ y += r.gap; return; }
     const yc = y + r.lh / 2;
@@ -570,9 +662,9 @@ function updateGuides(doSnap){
   if (mode === 'text' && lastTextBox){
     const L = lastTextBox;
     axis(true, [
-      { pos: W / 2,      val: ts.cx + (L.l + L.r) / 2 },   // post centre
-      { pos: MARGIN,     val: ts.cx + L.l },               // left margin
-      { pos: W - MARGIN, val: ts.cx + L.r }                // right margin
+      { pos: W / 2,      val: ts.cx + (L.l + L.r) / 2 },
+      { pos: MARGIN,     val: ts.cx + L.l },
+      { pos: W - MARGIN, val: ts.cx + L.r }
     ], d => ts.cx += d);
   }
   if (mode === 'photo' && photo && box){
@@ -590,26 +682,26 @@ function updateGuides(doSnap){
   }
 }
 
-// ---------- Touch gestures ----------
+// ---------- Touch gestures (main preview) ----------
 const pts = new Map(); let g = null;
-function toCanvas(e){
-  const r = canvas.getBoundingClientRect();
-  return { x: (e.clientX - r.left) * W / r.width, y: (e.clientY - r.top) * H / r.height };
+function posOn(cv, e){
+  const r = cv.getBoundingClientRect();
+  return { x: (e.clientX - r.left) * cv.width / r.width, y: (e.clientY - r.top) * cv.height / r.height };
 }
-function gInfo(){
-  const p = [...pts.values()];
+function gInfo(map){
+  const p = [...map.values()];
   const c = { x: p.reduce((s, q) => s + q.x, 0) / p.length, y: p.reduce((s, q) => s + q.y, 0) / p.length };
   const d = p.length > 1 ? Math.hypot(p[0].x - p[1].x, p[0].y - p[1].y) : 0;
   return { n: p.length, c, d };
 }
 function startGesture(){
   if (!pts.size){ g = null; guides = []; render(); return; }
-  g = { ...gInfo(), ph: { ...ph }, ts: { ...ts } };
+  g = { ...gInfo(pts), ph: { ...ph }, ts: { ...ts } };
   updateGuides(false); render();
 }
 function moveGesture(){
   if (!g) return;
-  const i = gInfo();
+  const i = gInfo(pts);
   if (i.n !== g.n){ startGesture(); return; }
   const dx = i.c.x - g.c.x, dy = i.c.y - g.c.y;
   const ratio = (g.n > 1 && g.d > 0) ? i.d / g.d : 1;
@@ -625,7 +717,7 @@ function moveGesture(){
     ts.cy = clamp(g.ts.cy + dy, 0, H);
     if (g.n > 1){
       ts.size = clamp(g.ts.size * ratio, 16, 140);
-      ts.titleSize = clamp(g.ts.titleSize * ratio, 20, 180);
+      if ($('titleOn').checked) ts.titleSize = clamp(g.ts.titleSize * ratio, 20, 120);
     }
   }
   updateGuides(g.n === 1);
@@ -634,9 +726,9 @@ function moveGesture(){
 }
 canvas.addEventListener('pointerdown', e => {
   if (mode === 'lock') return;
-  canvas.setPointerCapture(e.pointerId); pts.set(e.pointerId, toCanvas(e)); startGesture();
+  canvas.setPointerCapture(e.pointerId); pts.set(e.pointerId, posOn(canvas, e)); startGesture();
 });
-canvas.addEventListener('pointermove', e => { if (!pts.has(e.pointerId)) return; pts.set(e.pointerId, toCanvas(e)); moveGesture(); });
+canvas.addEventListener('pointermove', e => { if (!pts.has(e.pointerId)) return; pts.set(e.pointerId, posOn(canvas, e)); moveGesture(); });
 ['pointerup', 'pointercancel'].forEach(ev => canvas.addEventListener(ev, e => {
   if (!pts.has(e.pointerId)) return;
   pts.delete(e.pointerId); startGesture();
@@ -647,7 +739,7 @@ canvas.addEventListener('wheel', e => {
   e.preventDefault();
   const f = e.deltaY < 0 ? 1.08 : 1 / 1.08;
   if (mode === 'photo') ph.s = clamp(ph.s * f, 0.3, 8);
-  else { ts.size = clamp(ts.size * f, 16, 140); ts.titleSize = clamp(ts.titleSize * f, 20, 180); syncSteppers(); saveTS(); }
+  else { ts.size = clamp(ts.size * f, 16, 140); syncSteppers(); saveTS(); }
   scheduleRender();
 }, { passive: false });
 
@@ -663,15 +755,17 @@ async function fetchTweet(){
   xs.textContent = '⏳ Fetching post...'; xs.className = 'status';
   let t = null;
   try{
-    const d = await (await fetch(`https://api.fxtwitter.com/${p.user}/status/${p.id}`)).json();
+    const d = await getJSON(`https://api.fxtwitter.com/${p.user}/status/${p.id}`);
     if (d.tweet) t = { text: d.tweet.text || '', name: d.tweet.author?.name, handle: d.tweet.author?.screen_name,
                        photos: (d.tweet.media?.photos || []).map(x => x.url) };
   }catch(_){}
   if (!t){
     try{
-      const d = await (await fetch(`https://api.vxtwitter.com/${p.user}/status/${p.id}`)).json();
-      if (d.text !== undefined) t = { text: d.text || '', name: d.user_name, handle: d.user_screen_name,
-        photos: (d.media_extended || []).filter(m => m.type === 'image').map(m => m.url).concat(d.media_extended ? [] : (d.mediaURLs || [])) };
+      const d = await getJSON(`https://api.vxtwitter.com/${p.user}/status/${p.id}`);
+      if (d.text !== undefined){
+        const ext = (d.media_extended || []).filter(m => m.type === 'image').map(m => m.url);
+        t = { text: d.text || '', name: d.user_name, handle: d.user_screen_name, photos: ext.length ? ext : (d.mediaURLs || []) };
+      }
     }catch(_){}
   }
   if (!t){ xs.textContent = '❌ Could not fetch. Post may be private, or the service is down. Copy text manually.'; xs.className = 'status err'; return; }
@@ -710,23 +804,34 @@ NEWS:
 """${news || '(No text. Use the attached image.)'}"""
 
 Reply with ONLY a JSON object (no markdown, no backticks) with these keys:
-"headlines": array of EXACTLY 4 options for the IMAGE text, in this order:
-   - options 1 and 2: SHORT, 45-65 characters (8-12 words), fits in 2 lines.
-   - options 3 and 4: LONGER, 75-105 characters (13-18 words), about 3 lines, with more context.
-   In every option wrap 2-3 key words (names, places, numbers, key action) in *stars* to show them in yellow. End with " !" (space before !). Never include the word BREAKING.
+
+"headlines": array of EXACTLY 10 different options for the IMAGE text, in this order:
+   - options 1-5: SHORT, 12-16 words (70-95 characters).
+   - options 6-10: LONG, 18-26 words (105-150 characters), with extra context (who, where, numbers, why it matters).
+   EVERY option MUST keep the main point of the news: who + what happened + the key detail (number, place or decision). Never drop the core fact.
+   Vary the wording, angle and sentence structure across options, but never change the facts.
+   In every option wrap 2-4 key words (names, places, numbers, key action) in *stars* to show them in yellow. End with " !" (space before !). Never include the word BREAKING.
+
 "title": catchy caption title, 8-14 words, ends with "!" (use "BREAKING: " prefix for urgent news).
 "para1": 2-3 sentences: what happened, who, where.
 "para2": 2-3 sentences: outcome, reactions or significance.
 "hashtags": array of exactly 2 hashtags with # (e.g. place + topic).
 "keywords": array of 30-40 SEO keyword phrases. Do not include "Update Machi".
-"wiki_titles": up to 5 exact English Wikipedia article titles of the GENERAL subjects involved: main people, organisations, places and objects (e.g. "Vijay (actor)", "Tamil Nadu", "Auto rickshaw"). NOT the specific event.
-"image_queries": 4 SHORT, GENERAL image searches (2-4 words), each about ONE subject only: a person, a place, or an object (e.g. "CM Vijay", "Chennai auto rickshaw", "Tamil Nadu Secretariat"). Do NOT describe the specific event or decision.
+
+"subjects": array of 3-5 GENERAL visual subjects for finding photos, most important first. Include the main person(s), the main place, and the key object or topic (e.g. auto rickshaw, bus, court, stadium, smartphone, rain). Each item is an object:
+   {"name": short display name (e.g. "CM Vijay"),
+    "type": one of "person", "place", "object", "organisation", "event",
+    "wiki": exact English Wikipedia article title if one exists (e.g. "Vijay (actor)", "Chennai", "Auto rickshaw"), else "",
+    "query": 2-4 word GENERAL photo search (e.g. "Chennai auto rickshaw", "Tamil Nadu Secretariat")}
+   Subjects must be general things that have photos, NOT the specific event or decision.
+
+"google_queries": array of 3 Google Image searches: first one specific to this news (to find news photos), the other two general.
 
 EXAMPLE short headlines:
-"*TVK* wins both *Madurantakam* and *Dharapuram* by-elections !"
-"*Court* orders *15 days* police custody for *Anbil Mahesh* !"
+"*TVK* wins both *Madurantakam* and *Dharapuram* seats comfortably in the by-elections !"
+"*Court* orders *15 days* police custody for former minister *Anbil Mahesh Poyyamozhi* !"
 EXAMPLE long headline:
-"*TVK* wins both assembly seats - *Madurantakam* and *Dharapuram* comfortably in assembly *by-elections* in Tamil Nadu !"
+"*TVK* wins both assembly seats - *Madurantakam* and *Dharapuram* comfortably in assembly *by-elections* in Tamil Nadu, a big boost for the party !"
 
 EXAMPLE caption:
 "title": "BREAKING: 17 Inmates Escape from Theni Sub-Jail; 4 Rearrested"
@@ -757,7 +862,7 @@ function thinkingFor(model){
 async function callGemini(key, model, parts, search, timeout, useThinking){
   ctrl = new AbortController();
   const tm = setTimeout(() => ctrl.abort(), timeout);
-  const gc = { temperature: 0.6 };
+  const gc = { temperature: 0.7 };
   if (!search) gc.responseMimeType = 'application/json';
   const th = useThinking ? thinkingFor(model) : null;
   if (th) gc.thinkingConfig = th;
@@ -782,7 +887,6 @@ async function callGemini(key, model, parts, search, timeout, useThinking){
     throw e;
   }finally{ clearTimeout(tm); }
 }
-
 async function tryModels(key, ki, models, news, img){
   const modes = $('useSearch').checked ? [true, false] : [false];
   let err = '';
@@ -792,7 +896,7 @@ async function tryModels(key, ki, models, news, img){
       setLabel(`⏳ Key ${ki + 1} · ${model}${search ? ' + web' : ''}...`);
       const parts = [{ text: buildPrompt(news, search, !!img) }];
       if (img) parts.push({ inline_data: { mime_type: img.mime, data: img.data } });
-      const t = search ? 45000 : 25000;
+      const t = search ? 50000 : 30000;
       try{
         let out;
         try { out = await callGemini(key, model, parts, search, t, true); }
@@ -811,7 +915,6 @@ async function tryModels(key, ki, models, news, img){
   }
   return { ok: false, err };
 }
-
 async function generate(){
   const keys = keyOrder();
   if (!keys.length){ toast('Add your Gemini API key first'); openSettings(); return; }
@@ -825,7 +928,6 @@ async function generate(){
     setLabel('⏳ Reading post image...');
     try { img = await imageToBase64(xData.photos[0]); } catch(_){ img = null; }
   }
-
   let lastErr = '';
   for (const { i, k } of keys){
     if (cancelled) break;
@@ -853,10 +955,13 @@ async function generate(){
 function cancelGen(){ cancelled = true; if (ctrl) ctrl.abort(); }
 
 function applyResult(j, sources){
-  const hs = (j.headlines || []).filter(Boolean).slice(0, 4);
+  const hs = (j.headlines || []).filter(Boolean).slice(0, 10);
+  const half = Math.ceil(hs.length / 2);
   $('optBox').classList.toggle('hidden', !hs.length);
   $('headlineOptions').innerHTML = hs.map((h, i) =>
-    `<button class="chip${i === 0 ? ' active' : ''}" data-i="${i}"><span class="tag">${i < 2 ? 'Short' : 'Long'}</span>${esc(h).replace(/\*(.+?)\*/g, '<b>$1</b>')}</button>`).join('');
+    (i === 0 ? '<div class="optgroup">Short · 2–3 lines</div>' : '') +
+    (i === half ? '<div class="optgroup">Long · 3–4 lines</div>' : '') +
+    `<button class="chip${i === 0 ? ' active' : ''}" data-i="${i}">${esc(h).replace(/\*(.+?)\*/g, '<b>$1</b>')}</button>`).join('');
   $('headlineOptions').querySelectorAll('.chip').forEach(b => b.onclick = () => {
     $('headlineOptions').querySelectorAll('.chip').forEach(x => x.classList.remove('active'));
     b.classList.add('active'); $('headline').value = hs[b.dataset.i]; render();
@@ -879,52 +984,248 @@ ${kw}`;
   $('sourcesBox').classList.toggle('hidden', !sources.length);
   $('sources').innerHTML = sources.slice(0, 6).map(s => `<a href="${esc(s.uri)}" target="_blank">🔗 ${esc(s.title || 'source')}</a>`).join('');
   render();
-  loadSuggestions(j.wiki_titles || [], j.image_queries || []);
+  loadSuggestions(j.subjects || [], j.google_queries || []);
 }
 
-// ---------- Image suggestions (general subjects) ----------
-async function wikiImages(titles){
-  if (!titles.length) return [];
-  const url = 'https://en.wikipedia.org/w/api.php?action=query&format=json&origin=*&redirects=1&prop=pageimages&piprop=thumbnail&pithumbsize=1280&titles=' + encodeURIComponent(titles.join('|'));
-  const d = await (await fetch(url)).json();
-  return Object.values(d.query?.pages || {}).filter(p => p.thumbnail).map(p => ({ src: p.thumbnail.source, label: p.title }));
+// ---------- Image search (grouped by subject) ----------
+const BAD_IMG = /logo|icon|flag|map|symbol|seal|emblem|signature|coat.of.arms|locator|chart|graph|diagram|banner|button|stub|wikipedia|wikimedia|commons-|disambig|portal|padlock/i;
+async function getJSON(url, ms = 10000){
+  const c = new AbortController(); const t = setTimeout(() => c.abort(), ms);
+  try { const r = await fetch(url, { signal: c.signal }); return await r.json(); }
+  finally { clearTimeout(t); }
+}
+function wmItem(ii){
+  const thumb = ii.thumburl || ii.url;
+  return { thumb, src: ii.thumburl ? ii.thumburl.replace(/\/\d+px-/, '/1280px-') : ii.url, fallback: proxy(ii.url) + '&w=1600' };
+}
+async function wikiResolve(q){
+  const d = await getJSON(`https://en.wikipedia.org/w/api.php?action=query&format=json&origin=*&generator=search&gsrlimit=1&gsrsearch=${enc(q)}&prop=pageimages&piprop=thumbnail|original&pithumbsize=330`);
+  const p = Object.values(d.query?.pages || {})[0];
+  if (!p) return null;
+  const lead = p.thumbnail ? { thumb: p.thumbnail.source, src: p.thumbnail.source.replace(/\/\d+px-/, '/1280px-'),
+                               fallback: p.original ? proxy(p.original.source) + '&w=1600' : proxy(p.thumbnail.source) } : null;
+  return { title: p.title, lead };
+}
+async function wikiArticleImages(title){
+  const d = await getJSON(`https://en.wikipedia.org/w/api.php?action=query&format=json&origin=*&generator=images&gimlimit=40&titles=${enc(title)}&prop=imageinfo&iiprop=url|mime|size&iiurlwidth=330`);
+  return Object.values(d.query?.pages || {})
+    .filter(p => { const ii = p.imageinfo?.[0]; return ii && /jpeg|png|webp/.test(ii.mime) && (ii.width || 0) >= 500 && !BAD_IMG.test(p.title); })
+    .map(p => wmItem(p.imageinfo[0]));
 }
 async function commonsImages(q){
-  const url = 'https://commons.wikimedia.org/w/api.php?action=query&format=json&origin=*&generator=search&gsrnamespace=6&gsrlimit=4&prop=imageinfo&iiprop=url|mime&iiurlwidth=1280&gsrsearch=' + encodeURIComponent(q);
-  const d = await (await fetch(url)).json();
+  const d = await getJSON(`https://commons.wikimedia.org/w/api.php?action=query&format=json&origin=*&generator=search&gsrnamespace=6&gsrlimit=8&gsrsearch=${enc(q + ' filetype:bitmap')}&prop=imageinfo&iiprop=url|mime|size&iiurlwidth=330`);
   return Object.values(d.query?.pages || {})
-    .filter(p => p.imageinfo && /jpeg|png|webp/.test(p.imageinfo[0].mime))
-    .map(p => ({ src: p.imageinfo[0].thumburl || p.imageinfo[0].url, label: p.title.replace('File:', '') }));
+    .filter(p => { const ii = p.imageinfo?.[0]; return ii && /jpeg|png|webp/.test(ii.mime) && (ii.width || 0) >= 500 && !BAD_IMG.test(p.title); })
+    .map(p => wmItem(p.imageinfo[0]));
 }
-async function loadSuggestions(titles, queries){
-  $('suggestBox').classList.remove('hidden');
-  $('imgLinks').innerHTML = queries.map(q =>
-    `<a target="_blank" href="https://www.google.com/search?tbm=isch&q=${encodeURIComponent(q)}">🔎 ${esc(q)}</a>`).join('');
-  $('imgGrid').innerHTML = '<p class="hint" style="grid-column:1/-1">Finding images...</p>';
-
-  const subjects = [...titles.slice(0, 4).map(t => t.replace(/\s*\(.*?\)/g, '')), ...queries.slice(0, 4)];
-  const results = await Promise.allSettled([wikiImages(titles), ...subjects.map(commonsImages)]);
-  const lists = results.map(r => r.status === 'fulfilled' ? r.value : []);
-
-  // Mix results so every subject gets a turn
-  const seen = new Set(); suggestions = [];
-  for (let round = 0; round < 6 && suggestions.length < 18; round++){
-    lists.forEach(l => {
-      const it = l[round];
-      if (it && !seen.has(it.src) && suggestions.length < 18){ seen.add(it.src); suggestions.push(it); }
-    });
+async function openverse(q){
+  const d = await getJSON(`https://api.openverse.org/v1/images/?q=${enc(q)}&page_size=10&mature=false`);
+  return (d.results || [])
+    .filter(r => r.url && (!r.width || r.width >= 600))
+    .map(r => ({ thumb: r.thumbnail || r.url, src: proxy(r.url) + '&w=1600', fallback: r.url }));
+}
+async function fetchSubject(s){
+  const items = [], seen = new Set();
+  const add = list => list.forEach(it => { if (it && it.src && !seen.has(it.src)){ seen.add(it.src); items.push(it); } });
+  const wikiTask = (async () => {
+    const r = await wikiResolve(s.wiki || s.name);
+    if (!r) return [];
+    const arts = await wikiArticleImages(r.title).catch(() => []);
+    return (r.lead ? [r.lead] : []).concat(arts.slice(0, 8));
+  })();
+  const tasks = [wikiTask];
+  if (s.type !== 'person') tasks.push(openverse(s.query || s.name));
+  (await Promise.allSettled(tasks)).forEach(r => { if (r.status === 'fulfilled') add(r.value); });
+  if (items.length < 4){
+    try { add(await commonsImages(s.query || s.name)); } catch(_){}
   }
-
-  $('imgGrid').innerHTML = suggestions.length
-    ? suggestions.map((s, i) => `<img src="${esc(s.src)}" crossorigin="anonymous" loading="lazy" alt="${esc(s.label)}" data-i="${i}">`).join('')
-    : '<p class="hint" style="grid-column:1/-1">No free images found. Use the Google Images links below.</p>';
-  $('imgGrid').querySelectorAll('img').forEach(img => {
+  return { ...s, items: items.slice(0, 12) };
+}
+async function loadSuggestions(subjects, gq){
+  $('suggestBox').classList.remove('hidden');
+  $('imgLinks').innerHTML = gq.map(q => `<a target="_blank" href="${gImg(q)}">🔎 ${esc(q)}</a>`).join('');
+  $('imgGroups').innerHTML = '<p class="hint">Finding images...</p>';
+  allImgs = [];
+  const groups = await Promise.all(subjects.slice(0, 5).map(s => fetchSubject(s).catch(() => ({ ...s, items: [] }))));
+  const html = groups.filter(grp => grp.items.length).map(grp => {
+    const start = allImgs.length; allImgs.push(...grp.items);
+    return `<div class="sgroup">
+      <div class="shead"><span>${ICON[grp.type] || '🔹'} ${esc(grp.name)}</span><a target="_blank" href="${gImg(grp.query || grp.name)}">🔎 Google</a></div>
+      <div class="hrow">${grp.items.map((it, k) => `<img src="${esc(it.thumb)}" loading="lazy" data-i="${start + k}" alt="">`).join('')}</div>
+    </div>`;
+  }).join('');
+  $('imgGroups').innerHTML = html || '<p class="hint">No free images found. Use the Google Images links below.</p>';
+  $('imgGroups').querySelectorAll('img').forEach(img => {
     img.onclick = () => {
-      $('imgGrid').querySelectorAll('img').forEach(x => x.classList.remove('active'));
-      img.classList.add('active'); setPhoto(suggestions[img.dataset.i].src, true);
+      document.querySelectorAll('.hrow img').forEach(x => x.classList.remove('active'));
+      img.classList.add('active');
+      const it = allImgs[img.dataset.i];
+      setPhoto(it.src, true, it.fallback);
     };
     img.onerror = () => img.remove();
   });
+}
+
+// ---------- COLLAGE ----------
+const col = { items: [], layout: 0, gap: 8, color: '#FFFFFF' };
+let colActive = -1, colWeb = [];
+const cpts = new Map(); let cg = null;
+const colCanvas = $('colCanvas');
+
+function openCollage(){
+  const bw = box ? box.w : 1080, bh = box ? box.h : 930;
+  const w = Math.round(bw * COL_SCALE), h = Math.round(bh * COL_SCALE);
+  if (colCanvas.width !== w || colCanvas.height !== h){ colCanvas.width = w; colCanvas.height = h; }
+  colCanvas.style.width = `min(100%, ${(42 * w / h).toFixed(1)}vh)`;
+  buildColPicker();
+  $('collage').classList.remove('hidden');
+  document.body.style.overflow = 'hidden';
+  refreshCollageUI();
+}
+function closeCollage(){ $('collage').classList.add('hidden'); document.body.style.overflow = ''; }
+function loadImg(src, cors, fallback){
+  return new Promise((res, rej) => {
+    const im = new Image();
+    if (cors) im.crossOrigin = 'anonymous';
+    im.onload = () => res(im);
+    im.onerror = () => fallback ? loadImg(fallback, true).then(res, rej) : rej(new Error('load failed'));
+    im.src = src;
+  });
+}
+async function addToCollage(src, cors, fallback, thumb){
+  if (col.items.length >= 4) return toast('Max 4 photos');
+  try{
+    const img = await loadImg(src, cors, fallback);
+    col.items.push({ img, s: 1, x: 0, y: 0, thumb: thumb || src });
+    col.layout = 0; refreshCollageUI();
+  }catch(_){ toast('Could not load that image'); }
+}
+$('colFiles').onchange = async e => {
+  const files = [...e.target.files];
+  const room = 4 - col.items.length;
+  if (files.length > room) toast(`Only ${room} more photo(s) allowed`);
+  for (const f of files.slice(0, room)){ const u = URL.createObjectURL(f); await addToCollage(u, false, null, u); }
+  e.target.value = '';
+};
+function buildColPicker(){
+  colWeb = [...(xData?.photos || []).map(u => ({ thumb: u, src: u, fallback: proxy(u) })), ...allImgs];
+  $('colWebBox').classList.toggle('hidden', !colWeb.length);
+  $('colWeb').innerHTML = colWeb.map((it, i) => `<img src="${esc(it.thumb)}" loading="lazy" data-i="${i}" alt="">`).join('');
+  $('colWeb').querySelectorAll('img').forEach(img => {
+    img.onclick = () => { const it = colWeb[img.dataset.i]; addToCollage(it.src, true, it.fallback, it.thumb); };
+    img.onerror = () => img.remove();
+  });
+}
+function currentLayout(){
+  const n = col.items.length;
+  if (n < 2) return null;
+  return LAYOUTS[n][col.layout] || LAYOUTS[n][0];
+}
+function colRects(){
+  const L = currentLayout(); if (!L) return [];
+  const gp = col.gap * COL_SCALE, cw = colCanvas.width, ch = colCanvas.height;
+  return L.r.map(r => {
+    const x0 = r[0] * cw, y0 = r[1] * ch, x1 = (r[0] + r[2]) * cw, y1 = (r[1] + r[3]) * ch;
+    const l = r[0] > 0.001 ? gp / 2 : 0, t = r[1] > 0.001 ? gp / 2 : 0;
+    const rr = r[0] + r[2] < 0.999 ? gp / 2 : 0, b = r[1] + r[3] < 0.999 ? gp / 2 : 0;
+    return { x: x0 + l, y: y0 + t, w: x1 - x0 - l - rr, h: y1 - y0 - t - b };
+  });
+}
+function cellDims(it, R){
+  const cover = Math.max(R.w / it.img.width, R.h / it.img.height) * it.s;
+  return { dw: it.img.width * cover, dh: it.img.height * cover };
+}
+function renderCollage(){
+  const x = colCanvas.getContext('2d'), cw = colCanvas.width, ch = colCanvas.height;
+  const rects = colRects();
+  x.fillStyle = rects.length ? col.color : '#161b22';
+  x.fillRect(0, 0, cw, ch);
+  if (!rects.length){
+    x.fillStyle = '#8b949e'; x.font = '600 56px Inter, sans-serif'; x.textAlign = 'center'; x.textBaseline = 'middle';
+    x.fillText(col.items.length ? 'Add 1 more photo' : 'Add 2–4 photos', cw / 2, ch / 2);
+    x.textAlign = 'start'; return;
+  }
+  rects.forEach((R, i) => {
+    const it = col.items[i];
+    const { dw, dh } = cellDims(it, R);
+    it.x = clamp(it.x, -(dw - R.w) / 2, (dw - R.w) / 2);
+    it.y = clamp(it.y, -(dh - R.h) / 2, (dh - R.h) / 2);
+    x.save(); x.beginPath(); x.rect(R.x, R.y, R.w, R.h); x.clip();
+    x.drawImage(it.img, R.x + R.w / 2 + it.x - dw / 2, R.y + R.h / 2 + it.y - dh / 2, dw, dh);
+    x.restore();
+    if (cg && i === colActive){
+      x.save(); x.strokeStyle = '#FFD21F'; x.lineWidth = 8; x.strokeRect(R.x + 4, R.y + 4, R.w - 8, R.h - 8); x.restore();
+    }
+  });
+}
+let craf = 0;
+function scheduleCollage(){ if (!craf) craf = requestAnimationFrame(() => { craf = 0; renderCollage(); }); }
+function refreshCollageUI(){
+  const n = col.items.length;
+  const list = n >= 2 ? LAYOUTS[n] : [];
+  if (col.layout >= list.length) col.layout = 0;
+  $('colLayouts').innerHTML = list.length
+    ? list.map((l, i) => `<button class="${i === col.layout ? 'active' : ''}" onclick="setColLayout(${i})">${l.n}</button>`).join('')
+    : '<span class="hint">Add at least 2 photos to see layouts</span>';
+  $('colThumbs').innerHTML = col.items.map((it, i) => `
+    <div class="cthumb"><img src="${esc(it.thumb)}" alt=""><span class="num">${i + 1}</span>
+      <div class="acts"><button onclick="colMove(${i})">◀</button><button onclick="colRemove(${i})">✕</button></div>
+    </div>`).join('') || '<span class="hint">No photos yet</span>';
+  $('v_gap').textContent = col.gap;
+  document.querySelectorAll('#colColors button').forEach(b => b.classList.toggle('active', b.dataset.color === col.color));
+  renderCollage();
+}
+function setColLayout(i){ col.layout = i; col.items.forEach(it => { it.s = 1; it.x = 0; it.y = 0; }); refreshCollageUI(); }
+function colMove(i){ if (i > 0){ [col.items[i - 1], col.items[i]] = [col.items[i], col.items[i - 1]]; refreshCollageUI(); } }
+function colRemove(i){ col.items.splice(i, 1); col.layout = 0; refreshCollageUI(); }
+attachHold($('gapDec'), () => { col.gap = clamp(col.gap - 1, 0, 40); refreshCollageUI(); });
+attachHold($('gapInc'), () => { col.gap = clamp(col.gap + 1, 0, 40); refreshCollageUI(); });
+document.querySelectorAll('#colColors button').forEach(b => b.onclick = () => { col.color = b.dataset.color; refreshCollageUI(); });
+
+function cStart(){
+  if (!cpts.size){ cg = null; renderCollage(); return; }
+  const it = col.items[colActive];
+  if (!it){ cg = null; return; }
+  cg = { ...gInfo(cpts), s: it.s, x: it.x, y: it.y };
+  renderCollage();
+}
+function cMove(){
+  if (!cg) return;
+  const i = gInfo(cpts);
+  if (i.n !== cg.n){ cStart(); return; }
+  const it = col.items[colActive], R = colRects()[colActive];
+  if (!it || !R) return;
+  const rcx = R.x + R.w / 2, rcy = R.y + R.h / 2;
+  const ratio = (cg.n > 1 && cg.d > 0) ? i.d / cg.d : 1;
+  const ns = clamp(cg.s * ratio, 1, 6), k = ns / cg.s;
+  it.s = ns;
+  it.x = i.c.x - rcx - (cg.c.x - rcx - cg.x) * k;
+  it.y = i.c.y - rcy - (cg.c.y - rcy - cg.y) * k;
+  scheduleCollage();
+}
+colCanvas.addEventListener('pointerdown', e => {
+  const p = posOn(colCanvas, e);
+  if (!cpts.size){
+    colActive = colRects().findIndex(R => p.x >= R.x && p.x <= R.x + R.w && p.y >= R.y && p.y <= R.y + R.h);
+    if (colActive < 0) return;
+  }
+  colCanvas.setPointerCapture(e.pointerId); cpts.set(e.pointerId, p); cStart();
+});
+colCanvas.addEventListener('pointermove', e => { if (!cpts.has(e.pointerId)) return; cpts.set(e.pointerId, posOn(colCanvas, e)); cMove(); });
+['pointerup', 'pointercancel'].forEach(ev => colCanvas.addEventListener(ev, e => {
+  if (!cpts.has(e.pointerId)) return;
+  cpts.delete(e.pointerId); cStart();
+}));
+function useCollage(){
+  if (!currentLayout()) return toast('Add at least 2 photos');
+  cg = null; colActive = -1; renderCollage();
+  const out = document.createElement('canvas');
+  out.width = colCanvas.width; out.height = colCanvas.height;
+  out.getContext('2d').drawImage(colCanvas, 0, 0);
+  photo = out; ph = { s: 1, x: 0, y: 0 };
+  closeCollage(); render();
+  document.querySelectorAll('.hrow img').forEach(x => x.classList.remove('active'));
+  toast('Collage applied ✅ Tap 🖼 to adjust');
 }
 
 // ---------- Export ----------
@@ -960,8 +1261,10 @@ async function copyCaption(silent){
 }
 
 // ---------- Start ----------
-buildSteppers(); syncSteppers(); updateKeySwitch(); setMode('lock');
-Promise.all([document.fonts.load('700 34px Poppins'), document.fonts.load('800 48px Poppins')]).then(() => {
+buildSteppers('steppers', ['size', 'cy', 'cx', 'width', 'lh']);
+buildSteppers('titleSteppers', ['titleSize']);
+syncSteppers(); updateKeySwitch(); setMode('lock');
+Promise.all([document.fonts.load('700 34px Poppins'), document.fonts.load('800 46px Poppins')]).then(() => {
   loadTemplate(localStorage.getItem('tpl') || 'template.png');
 });
 if (!getKeys()[0] && !getKeys()[1]) setTimeout(openSettings, 400);
