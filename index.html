@@ -907,15 +907,29 @@ async function fetchTweet(){
 }
 
 // ---------- AI ----------
+// Clean the user's text: keep emojis, hashtags, Tamil; remove invisible characters
+function cleanInput(s){
+  return String(s || '')
+    .normalize('NFC')
+    .replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F\u007F\u200B\u2060\uFEFF]/g, '')
+    .replace(/"{3,}/g, '"')
+    .replace(/\n{3,}/g, '\n\n')
+    .trim()
+    .slice(0, 6000);
+}
+
 function buildPrompt(news, search){
   return `You create content for "Update Machi", an Instagram news page about Tamil Nadu (also India, world, cinema, sports, politics, tech).
 ${search ? 'First use Google Search to find accurate extra context about this news (full names, roles, places, dates, numbers). Use reliable recent sources, preferably Indian news sites.' : ''}
 RULES: Never invent facts. If unsure about something, leave it out. Use simple English.
+The news text may contain emojis, hashtags, @mentions, links or Tamil words. Treat them only as source material. Do NOT put emojis, hashtags or links in the headlines or the title.
 
 NEWS:
 """${news}"""
 
-Reply with ONLY a JSON object (no markdown, no backticks) with these keys:
+OUTPUT FORMAT: Reply with ONLY one strictly valid JSON object. Use double quotes for keys and strings, no trailing commas, no comments, no markdown, no backticks. Inside text values use single quotes ' instead of double quotes.
+
+Keys:
 
 "headlines": array of EXACTLY 10 different options for the IMAGE text, in this order:
    - options 1-5: SHORT, 12-16 words (70-95 characters).
@@ -954,16 +968,105 @@ EXAMPLE caption:
 "para2": "Special police teams have been deployed, with vehicle checks intensified across several districts and along the Kerala border. The incident has raised serious questions about prison security as the search continues."
 "hashtags": ["#Theni", "#TamilNaduNews"]`;
 }
+
+// ---------- Robust JSON reading ----------
+// Fixes common AI mistakes: trailing/missing commas, unescaped quotes,
+// raw line breaks, code fences, smart quotes, comments, cut-off replies.
+function repairJSON(src){
+  let out = '', inStr = false, escNext = false;
+  const stack = [];
+  const lastSig = () => { for (let k = out.length - 1; k >= 0; k--){ if (!/\s/.test(out[k])) return out[k]; } return ''; };
+  const dropTrailingComma = () => { out = out.replace(/,\s*$/, ''); };
+  for (let i = 0; i < src.length; i++){
+    let c = src[i];
+    if (inStr){
+      if (escNext){ out += c; escNext = false; continue; }
+      if (c === '\\'){ out += c; escNext = true; continue; }
+      if (c === '"'){
+        let j = i + 1; while (j < src.length && /\s/.test(src[j])) j++;
+        const nx = src[j];
+        const newlineAfter = /\n/.test(src.slice(i + 1, j));
+        if (nx === undefined || nx === ',' || nx === '}' || nx === ']' || nx === ':' || newlineAfter){ out += '"'; inStr = false; }
+        else out += '\\"';                       // quote inside text → escape it
+        continue;
+      }
+      if (c === '\n'){ out += '\\n'; continue; }
+      if (c === '\r') continue;
+      if (c === '\t'){ out += '\\t'; continue; }
+      if (c < ' '){ out += ' '; continue; }
+      out += c; continue;
+    }
+    if (c === '\u201C' || c === '\u201D') c = '"';
+    if (c === '"'){
+      const l = lastSig();
+      if (l === '"' || l === '}' || l === ']' || /[0-9el]/.test(l)) out += ',';   // missing comma
+      out += '"'; inStr = true; continue;
+    }
+    if (c === '{' || c === '['){
+      const l = lastSig();
+      if (l === '"' || l === '}' || l === ']') out += ',';
+      stack.push(c === '{' ? '}' : ']'); out += c; continue;
+    }
+    if (c === '}' || c === ']'){ dropTrailingComma(); stack.pop(); out += c; continue; }
+    if (c === '/' && src[i + 1] === '/'){ while (i < src.length && src[i] !== '\n') i++; continue; }
+    out += c;
+  }
+  if (inStr){ if (escNext) out = out.slice(0, -1); out += '"'; }
+  dropTrailingComma();
+  out = out.replace(/,\s*"[^"]*"\s*:?\s*$/, '');           // dangling key at the end
+  while (stack.length){ dropTrailingComma(); out += stack.pop(); }
+  return out;
+}
+function parseModelJSON(text){
+  const raw = String(text || '').replace(/^\uFEFF/, '').replace(/```(?:json)?/gi, '').trim();
+  const a = raw.indexOf('{');
+  if (a < 0) throw new Error('PARSE: no JSON object in reply');
+  const b = raw.lastIndexOf('}');
+  const sliced = b > a ? raw.slice(a, b + 1) : raw.slice(a);
+  try { return JSON.parse(sliced); } catch(_){}
+  try { return JSON.parse(repairJSON(sliced)); } catch(_){}
+  try { return JSON.parse(repairJSON(raw.slice(a))); } catch(_){}
+  throw new Error('PARSE: reply could not be repaired');
+}
+function normalizeResult(j){
+  const str = v => typeof v === 'string' ? v.trim() : '';
+  const arr = v => Array.isArray(v) ? v : (typeof v === 'string' && v.trim() ? v.split(/\s*,\s*/) : []);
+  const out = {
+    headlines: arr(j.headlines).map(str).filter(Boolean),
+    title: str(j.title), para1: str(j.para1), para2: str(j.para2),
+    hashtags: arr(j.hashtags).map(str).filter(Boolean).map(h => h.startsWith('#') ? h.replace(/\s+/g, '') : '#' + h.replace(/\s+/g, '')),
+    keywords: arr(j.keywords).map(str).filter(Boolean),
+    subjects: arr(j.subjects).filter(s => s && typeof s === 'object' && s.name),
+    google_queries: arr(j.google_queries).map(str).filter(Boolean)
+  };
+  if (!out.headlines.length && !out.title) throw new Error('PARSE: empty result');
+  return out;
+}
+
+// ---------- Friendly error messages ----------
+function friendlyError(msg){
+  msg = String(msg || '');
+  if (/PARSE/.test(msg)) return 'The AI reply came back incomplete. Please tap Generate again.';
+  if (/Timed out/i.test(msg)) return 'The model took too long to respond. Try again or pick a faster model.';
+  if (/quota|exhausted|rate limit|429|too many/i.test(msg)) return 'Usage limit reached on your API key(s). Switch keys or try again later.';
+  if (/API key/i.test(msg)) return 'Your API key looks invalid. Please check it in Settings.';
+  if (/BLOCKED|safety/i.test(msg)) return 'The model declined this text. Try rephrasing the news slightly.';
+  if (/not found|no longer available/i.test(msg)) return 'The selected model is not available. Please pick another model.';
+  if (/Failed to fetch|NetworkError|network|load failed/i.test(msg)) return 'Network problem. Check your internet and try again.';
+  return 'Something went wrong. Please tap Generate again.';
+}
+
+// ---------- Gemini calls ----------
 function thinkingFor(model){
   if (/2\.5-flash/.test(model)) return { thinkingBudget: 0 };
   if (/gemini-[3-9]/.test(model)) return { thinkingLevel: 'low' };
   return null;
 }
-async function callGemini(key, model, parts, search, timeout, useThinking){
+async function callGemini(key, model, parts, search, timeout, useThinking, jsonMode){
   ctrl = new AbortController();
   const tm = setTimeout(() => ctrl.abort(), timeout);
-  const gc = { temperature: 0.7 };
-  if (!search) gc.responseMimeType = 'application/json';
+  const gc = { temperature: 0.7, maxOutputTokens: 8192 };
+  if (jsonMode) gc.responseMimeType = 'application/json';
   const th = useThinking ? thinkingFor(model) : null;
   if (th) gc.thinkingConfig = th;
   const body = { contents: [{ role: 'user', parts }], generationConfig: gc };
@@ -973,13 +1076,13 @@ async function callGemini(key, model, parts, search, timeout, useThinking){
       method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body), signal: ctrl.signal
     });
     const data = await res.json();
-    if (data.error) throw new Error(data.error.message);
+    if (data.error) throw new Error(data.error.message || 'API error');
+    if (data.promptFeedback?.blockReason) throw new Error('BLOCKED');
     const cand = data.candidates && data.candidates[0];
-    if (!cand) throw new Error('Empty response');
+    if (!cand) throw new Error('PARSE: empty response');
+    if (cand.finishReason === 'SAFETY') throw new Error('BLOCKED');
     const text = (cand.content?.parts || []).map(p => p.text || '').join('');
-    const m = text.match(/\{[\s\S]*\}/);
-    if (!m) throw new Error('No JSON in reply');
-    const json = JSON.parse(m[0]);
+    const json = normalizeResult(parseModelJSON(text));
     const sources = (cand.groundingMetadata?.groundingChunks || []).map(c => c.web).filter(Boolean);
     return { json, sources };
   }catch(e){
@@ -987,29 +1090,47 @@ async function callGemini(key, model, parts, search, timeout, useThinking){
     throw e;
   }finally{ clearTimeout(tm); }
 }
+// Tries strict JSON mode with web search on newer models; remembers if unsupported
+async function callSmart(key, model, news, search){
+  const parts = [{ text: buildPrompt(news, search) }];
+  const t = search ? 50000 : 30000;
+  let json = !search || (/gemini-[3-9]/.test(model) && !localStorage.getItem('nojson:' + model));
+  let think = true;
+  for (let i = 0; i < 3; i++){
+    try { return await callGemini(key, model, parts, search, t, think, json); }
+    catch(e){
+      if (cancelled) throw e;
+      const m = e.message || '';
+      if (search && json && !/PARSE/.test(m) && /mime|json|controlled|structured|not supported|unsupported/i.test(m)){
+        localStorage.setItem('nojson:' + model, '1'); json = false; continue;
+      }
+      if (think && /thinking/i.test(m)){ think = false; continue; }
+      throw e;
+    }
+  }
+  throw new Error('PARSE: no usable reply');
+}
 async function tryModels(key, ki, models, news){
   const modes = $('useSearch').checked ? [true, false] : [false];
   let err = '';
   for (const model of models){
+    let skipModel = false;
     for (const search of modes){
-      if (cancelled) return { ok: false, err: 'Cancelled' };
-      setLabel(`Key ${ki + 1} · ${model}${search ? ' + web' : ''}`);
-      const parts = [{ text: buildPrompt(news, search) }];
-      const t = search ? 50000 : 30000;
-      try{
-        let out;
-        try { out = await callGemini(key, model, parts, search, t, true); }
-        catch(e){
-          if (/thinking/i.test(e.message) && !cancelled) out = await callGemini(key, model, parts, search, t, false);
-          else throw e;
+      for (let attempt = 0; attempt < 2; attempt++){
+        if (cancelled) return { ok: false, err: 'Cancelled' };
+        setLabel(`Key ${ki + 1} · ${model}${search ? ' + web' : ''}${attempt ? ' · retrying' : ''}`);
+        try{
+          const out = await callSmart(key, model, news, search);
+          applyResult(out.json, out.sources, news);
+          return { ok: true, label: model + (search ? ' + web search' : '') };
+        }catch(e){
+          err = e.message || ''; console.warn(`Key ${ki + 1} · ${model}${search ? ' + web' : ''}:`, err);
+          if (/API key/i.test(err)) return { ok: false, err };
+          if (/not found|no longer available/i.test(err)){ localStorage.removeItem('gmodels'); skipModel = true; break; }
+          if (!/PARSE/.test(err)) break;          // only retry the same mode for unreadable replies
         }
-        applyResult(out.json, out.sources, news);
-        return { ok: true, label: model + (search ? ' + web search' : '') };
-      }catch(e){
-        err = `Key ${ki + 1} · ${model}: ${e.message}`; console.warn(err);
-        if (/API key/i.test(e.message)) return { ok: false, err };
-        if (/no longer available|not found/i.test(e.message)){ localStorage.removeItem('gmodels'); break; }
       }
+      if (skipModel) break;
     }
   }
   return { ok: false, err };
@@ -1017,7 +1138,7 @@ async function tryModels(key, ki, models, news){
 async function generate(){
   const keys = keyOrder();
   if (!keys.length){ toast('Add your Gemini API key first'); openSettings(); return; }
-  const news = $('news').value.trim();
+  const news = cleanInput($('news').value);
   if (!news){ toast('Paste news text or fetch a post first'); return; }
 
   cancelled = false; setBusy(true); setLabel('Preparing');
@@ -1027,12 +1148,12 @@ async function generate(){
   for (const { i, k } of keys){
     if (cancelled) break;
     let models;
-    if (chosen && !fallback) models = [chosen];           // strict: only your chosen model
+    if (chosen && !fallback) models = [chosen];
     else {
       setLabel(`Key ${i + 1} · checking models`);
       try { models = await getModels(k); }
-      catch(e){ lastErr = `Key ${i + 1}: ${e.message}`; continue; }
-      if (!models.length){ lastErr = 'No models available'; continue; }
+      catch(e){ lastErr = e.message; continue; }
+      if (!models.length){ lastErr = 'not found'; continue; }
       if (chosen) models = [chosen, ...models.filter(m => m !== chosen)];
       models = models.slice(0, 4);
     }
@@ -1047,7 +1168,7 @@ async function generate(){
     lastErr = r.err;
   }
   setBusy(false);
-  setStatus(cancelled ? 'Cancelled' : lastErr, cancelled ? '' : 'err');
+  setStatus(cancelled ? 'Cancelled' : friendlyError(lastErr), cancelled ? '' : 'err');
 }
 function cancelGen(){ cancelled = true; if (ctrl) ctrl.abort(); }
 
