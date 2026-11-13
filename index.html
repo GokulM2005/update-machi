@@ -207,6 +207,8 @@ input[type=color]{width:54px;height:36px;border:1px solid var(--line-2);border-r
     </div>
     <div class="sec" id="newsLabel" style="margin-top:16px">News text</div>
     <textarea id="news" placeholder="Paste short news text…"></textarea>
+    <div class="sec">Extra context <span style="text-transform:none;letter-spacing:0;font-weight:500;color:var(--dim)">optional</span></div>
+    <textarea id="context" style="min-height:70px" placeholder="e.g. India vs Australia, 2nd ODI, Perth. Catch to dismiss Steve Smith off Bumrah."></textarea>
     <div class="field-row"><label for="modelSel">Model</label><select id="modelSel"></select></div>
     <div class="field-row hidden" id="keyRow">
       <span>API key</span>
@@ -219,7 +221,8 @@ input[type=color]{width:54px;height:36px;border:1px solid var(--line-2);border-r
       <span>Web search for context</span>
       <label class="switch"><input type="checkbox" id="useSearch" checked><span class="slider"></span></label>
     </div>
-    <button class="btn btn-primary" id="genBtn" onclick="generate()" style="margin-top:6px"></button>
+    <button class="btn btn-primary" id="genBtn" onclick="generate('full')" style="margin-top:6px"></button>
+    <button class="btn btn-secondary" id="capBtn" onclick="generate('caption')" style="margin-top:8px"></button>
     <button class="btn btn-secondary hidden" id="cancelBtn" onclick="cancelGen()" style="margin-top:8px">Cancel</button>
     <div id="status" class="status"></div>
   </section>
@@ -307,8 +310,13 @@ input[type=color]{width:54px;height:36px;border:1px solid var(--line-2);border-r
       </div>
     </div>
     <button class="btn btn-secondary" onclick="refreshModelSelect(true)" style="margin-top:14px" data-icon="refresh"><span>Reload model list</span></button>
-    <div class="sec">Template (only if not on GitHub)</div>
-    <input type="file" id="tplFile" accept="image/*">
+    <div class="sec">Template</div>
+    <div class="field-row" style="padding-top:0">
+      <span id="tplStatus">Using GitHub template</span>
+      <button class="btn btn-secondary btn-sm hidden" id="tplResetBtn" style="height:34px" onclick="useOriginalTemplate()">Use original</button>
+    </div>
+    <input type="file" id="tplFile" accept="image/*" style="margin-top:10px">
+    <p class="hint">An uploaded template applies to this phone only. "Use original" goes back to template.png from GitHub.</p>
     <div class="row">
       <button class="btn btn-secondary" onclick="closeSettings()">Close</button>
       <button class="btn btn-primary" onclick="saveSettings()">Save</button>
@@ -448,9 +456,15 @@ function toast(msg){
 }
 function setStatus(msg, type){ const s = $('status'); s.textContent = msg; s.className = 'status' + (type ? ' ' + type : ''); }
 function setLabel(l){ curLabel = l; setStatus(`${l} · ${Math.round((Date.now() - t0) / 1000)}s`); }
+let busyKind = 'full';
 function setBusy(b){
-  $('genBtn').disabled = b;
-  $('genBtn').innerHTML = b ? '<span class="spinner"></span> Generating…' : svg('sparkles') + ' Generate';
+  $('genBtn').disabled = b; $('capBtn').disabled = b;
+  $('genBtn').innerHTML = (b && busyKind === 'full')
+    ? '<span class="spinner"></span> Generating…'
+    : svg('sparkles') + ' Generate all';
+  $('capBtn').innerHTML = (b && busyKind === 'caption')
+    ? '<span class="spinner" style="border-color:rgba(255,255,255,.25);border-top-color:#fff"></span> Writing caption…'
+    : svg('file') + ' Generate only caption';
   $('cancelBtn').classList.toggle('hidden', !b);
   clearInterval(timerInt);
   if (b){ t0 = Date.now(); timerInt = setInterval(() => setLabel(curLabel), 1000); }
@@ -567,9 +581,20 @@ document.querySelectorAll('#expSeg button').forEach(b => b.onclick = () => { loc
 // ---------- Template ----------
 function loadTemplate(src){
   const img = new Image();
-  img.onload = () => { processTemplate(img); render(); };
-  img.onerror = () => toast('template.png not found');
+  img.onload = () => { processTemplate(img); render(); updateTplStatus(); };
+  img.onerror = () => toast('Template image not found');
   img.src = src;
+}
+function updateTplStatus(){
+  const custom = !!localStorage.getItem('tpl');
+  $('tplStatus').textContent = custom ? 'Using uploaded template' : 'Using GitHub template';
+  $('tplResetBtn').classList.toggle('hidden', !custom);
+}
+function useOriginalTemplate(){
+  localStorage.removeItem('tpl');
+  $('tplFile').value = '';
+  loadTemplate('template.png?v=' + Date.now());   // ?v= skips the browser's old cached copy
+  toast('Original template restored');
 }
 function processTemplate(img){
   const off = document.createElement('canvas'); off.width = W; off.height = H;
@@ -907,7 +932,6 @@ async function fetchTweet(){
 }
 
 // ---------- AI ----------
-// Clean the user's text: keep emojis, hashtags, Tamil; remove invisible characters
 function cleanInput(s){
   return String(s || '')
     .normalize('NFC')
@@ -918,17 +942,43 @@ function cleanInput(s){
     .slice(0, 6000);
 }
 
-function buildPrompt(news, search){
-  return `You create content for "Update Machi", an Instagram news page about Tamil Nadu (also India, world, cinema, sports, politics, tech).
-${search ? 'First use Google Search to find accurate extra context about this news (full names, roles, places, dates, numbers). Use reliable recent sources, preferably Indian news sites.' : ''}
+const CAPTION_SPEC = `"title": catchy caption title, 8-14 words, ends with "!". Do NOT use the word "BREAKING" unless the news text literally contains it.
+"para1": 2-3 sentences: what happened, who, where.
+"para2": 2-3 sentences: outcome, reactions or significance.
+"hashtags": array of exactly 2 hashtags with # (e.g. place + topic).
+"keywords": array of 30-40 SEO keyword phrases. Do not include "Update Machi".`;
+
+const CAPTION_EXAMPLE = `EXAMPLE caption:
+"title": "17 Inmates Escape from Theni Sub-Jail; 4 Rearrested!"
+"para1": "In a major security breach, 17 undertrial prisoners escaped from Thekkampatti sub-jail in Theni district after allegedly attacking prison staff. Police have arrested four of the escapees during intensive search operations, while a statewide manhunt is underway to trace the remaining 13 prisoners."
+"para2": "Special police teams have been deployed, with vehicle checks intensified across several districts and along the Kerala border. The incident has raised serious questions about prison security as the search continues."
+"hashtags": ["#Theni", "#TamilNaduNews"]`;
+
+function buildPrompt(news, context, search, kind){
+  const head = `You create content for "Update Machi", an Instagram news page about Tamil Nadu (also India, world, cinema, sports, politics, tech).
+${search ? 'First use Google Search to find accurate extra context about this news (full names, roles, places, dates, numbers, match/event details). Search using BOTH the news text and the editor context below. Use reliable recent sources, preferably Indian news sites.' : ''}
 RULES: Never invent facts. If unsure about something, leave it out. Use simple English.
 The news text may contain emojis, hashtags, @mentions, links or Tamil words. Treat them only as source material. Do NOT put emojis, hashtags or links in the headlines or the title.
+${context ? 'The EDITOR CONTEXT is trusted and accurate. Use it to fill in missing details. If it disagrees with web results, trust the editor context.' : ''}
 
 NEWS:
-"""${news}"""
-
+"""${news || '(see editor context)'}"""
+${context ? `
+EDITOR CONTEXT:
+"""${context}"""
+` : ''}
 OUTPUT FORMAT: Reply with ONLY one strictly valid JSON object. Use double quotes for keys and strings, no trailing commas, no comments, no markdown, no backticks. Inside text values use single quotes ' instead of double quotes.
+`;
 
+  if (kind === 'caption'){
+    return head + `
+Keys:
+${CAPTION_SPEC}
+
+${CAPTION_EXAMPLE}`;
+  }
+
+  return head + `
 Keys:
 
 "headlines": array of EXACTLY 10 different options for the IMAGE text, in this order:
@@ -938,11 +988,7 @@ Keys:
    Vary the wording, angle and sentence structure, but never change the facts.
    In every option wrap 2-4 key words (names, places, numbers, key action) in *stars* to highlight them. End with " !" (space before !). Never use the word BREAKING.
 
-"title": catchy caption title, 8-14 words, ends with "!". Do NOT use the word "BREAKING" unless the news text above literally contains it.
-"para1": 2-3 sentences: what happened, who, where.
-"para2": 2-3 sentences: outcome, reactions or significance.
-"hashtags": array of exactly 2 hashtags with # (e.g. place + topic).
-"keywords": array of 30-40 SEO keyword phrases. Do not include "Update Machi".
+${CAPTION_SPEC}
 
 "subjects": array of 3-5 GENERAL visual subjects for finding photos, most important first: the main person(s), the main place, and the key object or topic.
    EVERYTHING must be LOCALISED to Tamil Nadu / India. Example: use "TNSTC bus" not "bus"; "Chennai auto rickshaw" not "auto rickshaw"; "Tamil Nadu police" not "police".
@@ -962,16 +1008,10 @@ EXAMPLE short headlines:
 EXAMPLE long headline:
 "*TVK* wins both assembly seats - *Madurantakam* and *Dharapuram* comfortably in assembly *by-elections* in Tamil Nadu, a big boost for the party !"
 
-EXAMPLE caption:
-"title": "17 Inmates Escape from Theni Sub-Jail; 4 Rearrested!"
-"para1": "In a major security breach, 17 undertrial prisoners escaped from Thekkampatti sub-jail in Theni district after allegedly attacking prison staff. Police have arrested four of the escapees during intensive search operations, while a statewide manhunt is underway to trace the remaining 13 prisoners."
-"para2": "Special police teams have been deployed, with vehicle checks intensified across several districts and along the Kerala border. The incident has raised serious questions about prison security as the search continues."
-"hashtags": ["#Theni", "#TamilNaduNews"]`;
+${CAPTION_EXAMPLE}`;
 }
 
 // ---------- Robust JSON reading ----------
-// Fixes common AI mistakes: trailing/missing commas, unescaped quotes,
-// raw line breaks, code fences, smart quotes, comments, cut-off replies.
 function repairJSON(src){
   let out = '', inStr = false, escNext = false;
   const stack = [];
@@ -987,7 +1027,7 @@ function repairJSON(src){
         const nx = src[j];
         const newlineAfter = /\n/.test(src.slice(i + 1, j));
         if (nx === undefined || nx === ',' || nx === '}' || nx === ']' || nx === ':' || newlineAfter){ out += '"'; inStr = false; }
-        else out += '\\"';                       // quote inside text → escape it
+        else out += '\\"';
         continue;
       }
       if (c === '\n'){ out += '\\n'; continue; }
@@ -999,7 +1039,7 @@ function repairJSON(src){
     if (c === '\u201C' || c === '\u201D') c = '"';
     if (c === '"'){
       const l = lastSig();
-      if (l === '"' || l === '}' || l === ']' || /[0-9el]/.test(l)) out += ',';   // missing comma
+      if (l === '"' || l === '}' || l === ']' || /[0-9el]/.test(l)) out += ',';
       out += '"'; inStr = true; continue;
     }
     if (c === '{' || c === '['){
@@ -1013,7 +1053,7 @@ function repairJSON(src){
   }
   if (inStr){ if (escNext) out = out.slice(0, -1); out += '"'; }
   dropTrailingComma();
-  out = out.replace(/,\s*"[^"]*"\s*:?\s*$/, '');           // dangling key at the end
+  out = out.replace(/,\s*"[^"]*"\s*:?\s*$/, '');
   while (stack.length){ dropTrailingComma(); out += stack.pop(); }
   return out;
 }
@@ -1039,7 +1079,7 @@ function normalizeResult(j){
     subjects: arr(j.subjects).filter(s => s && typeof s === 'object' && s.name),
     google_queries: arr(j.google_queries).map(str).filter(Boolean)
   };
-  if (!out.headlines.length && !out.title) throw new Error('PARSE: empty result');
+  if (!out.headlines.length && !out.title && !out.para1) throw new Error('PARSE: empty result');
   return out;
 }
 
@@ -1090,10 +1130,9 @@ async function callGemini(key, model, parts, search, timeout, useThinking, jsonM
     throw e;
   }finally{ clearTimeout(tm); }
 }
-// Tries strict JSON mode with web search on newer models; remembers if unsupported
-async function callSmart(key, model, news, search){
-  const parts = [{ text: buildPrompt(news, search) }];
-  const t = search ? 50000 : 30000;
+async function callSmart(key, model, prompt, search, kind){
+  const parts = [{ text: prompt }];
+  const t = kind === 'caption' ? (search ? 40000 : 25000) : (search ? 50000 : 30000);
   let json = !search || (/gemini-[3-9]/.test(model) && !localStorage.getItem('nojson:' + model));
   let think = true;
   for (let i = 0; i < 3; i++){
@@ -1110,7 +1149,7 @@ async function callSmart(key, model, news, search){
   }
   throw new Error('PARSE: no usable reply');
 }
-async function tryModels(key, ki, models, news){
+async function tryModels(key, ki, models, job){
   const modes = $('useSearch').checked ? [true, false] : [false];
   let err = '';
   for (const model of models){
@@ -1120,14 +1159,14 @@ async function tryModels(key, ki, models, news){
         if (cancelled) return { ok: false, err: 'Cancelled' };
         setLabel(`Key ${ki + 1} · ${model}${search ? ' + web' : ''}${attempt ? ' · retrying' : ''}`);
         try{
-          const out = await callSmart(key, model, news, search);
-          applyResult(out.json, out.sources, news);
+          const out = await callSmart(key, model, buildPrompt(job.news, job.context, search, job.kind), search, job.kind);
+          applyResult(out.json, out.sources, job.news, job.kind);
           return { ok: true, label: model + (search ? ' + web search' : '') };
         }catch(e){
           err = e.message || ''; console.warn(`Key ${ki + 1} · ${model}${search ? ' + web' : ''}:`, err);
           if (/API key/i.test(err)) return { ok: false, err };
           if (/not found|no longer available/i.test(err)){ localStorage.removeItem('gmodels'); skipModel = true; break; }
-          if (!/PARSE/.test(err)) break;          // only retry the same mode for unreadable replies
+          if (!/PARSE/.test(err)) break;
         }
       }
       if (skipModel) break;
@@ -1135,13 +1174,15 @@ async function tryModels(key, ki, models, news){
   }
   return { ok: false, err };
 }
-async function generate(){
+async function generate(kind = 'full'){
   const keys = keyOrder();
   if (!keys.length){ toast('Add your Gemini API key first'); openSettings(); return; }
   const news = cleanInput($('news').value);
-  if (!news){ toast('Paste news text or fetch a post first'); return; }
+  const context = cleanInput($('context').value);
+  if (!news && !context){ toast('Paste news text or fetch a post first'); return; }
 
-  cancelled = false; setBusy(true); setLabel('Preparing');
+  busyKind = kind; cancelled = false; setBusy(true); setLabel('Preparing');
+  const job = { news, context, kind };
   const chosen = localStorage.getItem('gmodel') || '';
   const fallback = localStorage.getItem('gFallback') === '1';
   let lastErr = '';
@@ -1157,12 +1198,12 @@ async function generate(){
       if (chosen) models = [chosen, ...models.filter(m => m !== chosen)];
       models = models.slice(0, 4);
     }
-    const r = await tryModels(k, i, models, news);
+    const r = await tryModels(k, i, models, job);
     if (r.ok){
       if (i !== activeKey()){ localStorage.setItem('gActive', i); updateKeySwitch(); toast(`Switched to Key ${i + 1}`); }
       setBusy(false);
-      setStatus(`Done · ${r.label} · Key ${i + 1}`, 'ok');
-      switchTab('text');
+      setStatus(`${kind === 'caption' ? 'Caption ready' : 'Done'} · ${r.label} · Key ${i + 1}`, 'ok');
+      switchTab(kind === 'caption' ? 'caption' : 'text');
       return;
     }
     lastErr = r.err;
@@ -1172,7 +1213,26 @@ async function generate(){
 }
 function cancelGen(){ cancelled = true; if (ctrl) ctrl.abort(); }
 
-function applyResult(j, sources, orig){
+function applyResult(j, sources, orig, kind = 'full'){
+  // Caption (both modes)
+  const kw = [...(j.keywords || []), 'Update Machi'].join(', ');
+  $('caption').value = `${j.title || ''}
+
+${j.para1 || ''}
+
+${j.para2 || ''}
+
+Follow @update.machi ✅️💯
+
+${(j.hashtags || []).join(' ')}
+
+${kw}`;
+  $('sourcesBox').classList.toggle('hidden', !sources.length);
+  $('sources').innerHTML = sources.slice(0, 6).map(s => `<a href="${esc(s.uri)}" target="_blank">${esc(s.title || 'source')}</a>`).join('');
+
+  if (kind === 'caption') return;   // caption-only: leave headlines & images untouched
+
+  // Headlines (full mode)
   const hs = (j.headlines || []).filter(Boolean).slice(0, 10);
   const half = Math.ceil(hs.length / 2);
   const opts = [...hs]; if (orig) opts.push(orig);
@@ -1188,21 +1248,6 @@ function applyResult(j, sources, orig){
   });
   if (opts[0]) $('headline').value = opts[0];
 
-  const kw = [...(j.keywords || []), 'Update Machi'].join(', ');
-  $('caption').value = `${j.title || ''}
-
-${j.para1 || ''}
-
-${j.para2 || ''}
-
-Follow @update.machi ✅️💯
-
-${(j.hashtags || []).join(' ')}
-
-${kw}`;
-
-  $('sourcesBox').classList.toggle('hidden', !sources.length);
-  $('sources').innerHTML = sources.slice(0, 6).map(s => `<a href="${esc(s.uri)}" target="_blank">${esc(s.title || 'source')}</a>`).join('');
   render();
   loadSuggestions(j.subjects || [], j.google_queries || [], sources);
 }
@@ -1577,7 +1622,7 @@ async function copyCaption(silent){
 function newPost(){
   const hasWork = $('news').value.trim() || $('caption').value.trim() || $('headline').value.trim() || photo;
   if (hasWork && !confirm('Start a new post? This clears the text, images and caption.')) return;
-  $('news').value = ''; $('xUrl').value = ''; xData = null;
+  $$('news').value = ''; $$('context').value = ''; $('xUrl').value = ''; xData = null;
   $('xPreview').classList.add('hidden'); $('xStatus').textContent = '';
   $('headline').value = ''; $('optBox').classList.add('hidden'); $('headlineOptions').innerHTML = '';
   $('titleOn').checked = false; $('titleText').value = ''; $('titleBox').classList.add('hidden');
