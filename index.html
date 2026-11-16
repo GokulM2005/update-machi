@@ -398,6 +398,16 @@ input[type=color]{width:54px;height:36px;border:1px solid var(--line-2);border-r
   </div>
 </div>
 
+<div id="dlBox" class="modal hidden" onclick="if(event.target===this)closeDl()">
+  <div class="sheet">
+    <div class="sheet-head"><h3>Image ready</h3><button class="ibtn" onclick="closeDl()" data-icon="x"></button></div>
+    <img id="dlImg" alt="" style="display:block;width:min(100%,240px);margin:0 auto;border-radius:10px;box-shadow:0 8px 30px rgba(0,0,0,.45)">
+    <p class="hint" id="dlInfo" style="text-align:center;margin-top:10px"></p>
+    <a id="dlLink" class="btn btn-primary" style="margin-top:12px;text-decoration:none" download>Download</a>
+    <p class="hint" style="text-align:center">If it doesn't start, long-press the image above and choose "Download image".</p>
+  </div>
+</div>
+
 <div id="toast" class="toast"></div>
 
 <script>
@@ -1637,14 +1647,27 @@ function getBlob(){
     catch(e){ rej(e); }
   });
 }
+let dlURL = null;
 async function downloadImage(){
-  try{
-    const blob = await getBlob();
-    const a = document.createElement('a');
-    a.href = URL.createObjectURL(blob); a.download = 'update-machi-' + Date.now() + '.jpg'; a.click();
-    toast(`Saved · ${(blob.size / 1048576).toFixed(1)} MB`);
-  }catch(e){ toast('Cannot export this image. Save it and upload instead.'); }
+  let blob;
+  try { blob = await getBlob(); }
+  catch(e){ toast('Cannot export this image. Save it and upload instead.'); return; }
+
+  if (dlURL) URL.revokeObjectURL(dlURL);          // free the previous image's memory
+  dlURL = URL.createObjectURL(blob);
+
+  const sc = +(localStorage.getItem('exportScale') || 2);
+  const size = (blob.size / 1048576).toFixed(1) + ' MB';
+  const link = $('dlLink');
+  link.href = dlURL;
+  link.download = 'update-machi-' + Date.now() + '.jpg';   // unique name every time
+  link.textContent = `Download · ${size}`;
+  $('dlImg').src = dlURL;
+  $('dlInfo').textContent = `${W * sc} × ${H * sc} px · ${size}`;
+  $('dlBox').classList.remove('hidden');
 }
+function closeDl(){ $('dlBox').classList.add('hidden'); }
+$('dlLink').addEventListener('click', () => { toast('Downloading…'); setTimeout(closeDl, 400); });
 async function shareImage(){
   try{
     const blob = await getBlob();
