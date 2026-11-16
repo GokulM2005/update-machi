@@ -147,6 +147,12 @@ input[type=color]{width:54px;height:36px;border:1px solid var(--line-2);border-r
 .toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%) translateY(120px);background:var(--surface-2);border:1px solid var(--line-2);color:var(--text);padding:11px 16px;border-radius:10px;font-size:13.5px;z-index:60;transition:.3s;max-width:90%;text-align:center;box-shadow:0 8px 30px rgba(0,0,0,.4)}
 .toast.show{transform:translateX(-50%) translateY(0)}
 .hidden{display:none!important}
+.editor{min-height:124px;max-height:240px;overflow:auto;background:var(--bg);border:1px solid var(--line-2);border-radius:10px;padding:11px 12px;font:15px/1.55 Inter,sans-serif;color:var(--text);white-space:pre-wrap;word-break:break-word;outline:none;transition:border-color .15s,box-shadow .15s}
+.editor:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(245,197,24,.12)}
+.editor:empty:before{content:attr(data-placeholder);color:var(--dim)}
+.editor .hl{color:var(--hl,#FFE01B);font-weight:700}
+.ed-tools{display:flex;gap:8px;margin-bottom:8px}
+.ed-tools .btn{height:36px}
 </style>
 </head>
 <body>
@@ -234,8 +240,13 @@ input[type=color]{width:54px;height:36px;border:1px solid var(--line-2);border-r
       <div id="headlineOptions" class="chips"></div>
     </div>
     <div class="sec">Headline</div>
-    <textarea id="headline" rows="4" style="min-height:124px" placeholder="Type or pick a headline…"></textarea>
-    <p class="hint">Wrap words in *stars* to highlight. Enter starts a new line.</p>
+    <div class="ed-tools">
+      <button class="btn btn-primary btn-sm" onmousedown="event.preventDefault()" onclick="toggleHighlight()">Highlight</button>
+      <button class="btn btn-secondary btn-sm" onmousedown="event.preventDefault()" onclick="clearHighlights()">Clear highlights</button>
+    </div>
+    <div id="headlineEd" class="editor" contenteditable="true" spellcheck="false" data-placeholder="Paste news in the News tab, or type here…"></div>
+    <textarea id="headline" class="hidden"></textarea>
+    <p class="hint">Tap a word (or select words) and press Highlight. Press again to remove. Enter starts a new line.</p>
     <div class="field-row" style="margin-top:6px">
       <span>Headlines title</span>
       <label class="switch"><input type="checkbox" id="titleOn" autocomplete="off"><span class="slider"></span></label>
@@ -358,6 +369,17 @@ input[type=color]{width:54px;height:36px;border:1px solid var(--line-2);border-r
     <div class="row">
       <button class="btn btn-secondary" onclick="closeCollage()">Close</button>
       <button class="btn btn-primary" onclick="useCollage()">Use collage</button>
+    </div>
+  </div>
+</div>
+
+<div id="confirmBox" class="modal hidden" onclick="if(event.target===this)closeConfirm()">
+  <div class="sheet">
+    <div class="sheet-head"><h3 id="cfTitle"></h3></div>
+    <p id="cfText" style="margin:0;color:var(--muted);font-size:13.5px"></p>
+    <div class="row">
+      <button class="btn btn-secondary" onclick="closeConfirm()">Cancel</button>
+      <button class="btn btn-primary" id="cfOk">OK</button>
     </div>
   </div>
 </div>
@@ -916,7 +938,7 @@ async function fetchTweet(){
 
   t.text = t.text.replace(/https?:\/\/t\.co\/\S+/g, '').trim();
   xData = t;
-  $('news').value = t.text;
+  $('news').value = t.text; syncHeadlineFromNews();
   $('xWho').textContent = `${t.name || ''} @${t.handle || p.user}`;
   $('xText').textContent = t.text || '(no text, image only)';
   $('xImgs').innerHTML = t.photos.map((u, i) => `<img src="${esc(u)}" data-i="${i}" alt="">`).join('');
@@ -1230,23 +1252,29 @@ ${kw}`;
   $('sourcesBox').classList.toggle('hidden', !sources.length);
   $('sources').innerHTML = sources.slice(0, 6).map(s => `<a href="${esc(s.uri)}" target="_blank">${esc(s.title || 'source')}</a>`).join('');
 
-  if (kind === 'caption') return;   // caption-only: leave headlines & images untouched
+  if (kind === 'caption') return;   // caption-only: leave headline & images untouched
 
-  // Headlines (full mode)
+  // Headline options: Original first, then 10 AI options
   const hs = (j.headlines || []).filter(Boolean).slice(0, 10);
+  const original = String(orig || '').replace(/https?:\/\/\S+/g, '').replace(/\*/g, '').trim();
+  const opts = original ? [original, ...hs] : [...hs];
+  const off = original ? 1 : 0;
   const half = Math.ceil(hs.length / 2);
-  const opts = [...hs]; if (orig) opts.push(orig);
+
+  if (!$('headline').value.trim() && opts[0]) setHeadline(opts[0], true);
+  const cur = $('headline').value.trim();
+
   $('optBox').classList.toggle('hidden', !opts.length);
   $('headlineOptions').innerHTML = opts.map((h, i) =>
-    (i === 0 && hs.length ? '<div class="optgroup">Short</div>' : '') +
-    (i === half && i < hs.length ? '<div class="optgroup">Long</div>' : '') +
-    (orig && i === opts.length - 1 ? '<div class="optgroup">Original text</div>' : '') +
-    `<button class="chip${i === 0 ? ' active' : ''}" data-i="${i}">${esc(h).replace(/\*(.+?)\*/g, '<b>$1</b>')}</button>`).join('');
+    (original && i === 0 ? '<div class="optgroup">Original text</div>' : '') +
+    (i === off && hs.length ? '<div class="optgroup">Short</div>' : '') +
+    (i === off + half && half < hs.length ? '<div class="optgroup">Long</div>' : '') +
+    `<button class="chip${h.trim() === cur ? ' active' : ''}" data-i="${i}">${esc(h).replace(/\*(.+?)\*/g, '<b>$1</b>')}</button>`).join('');
   $('headlineOptions').querySelectorAll('.chip').forEach(b => b.onclick = () => {
     $('headlineOptions').querySelectorAll('.chip').forEach(x => x.classList.remove('active'));
-    b.classList.add('active'); $('headline').value = opts[b.dataset.i]; render();
+    b.classList.add('active');
+    setHeadline(opts[b.dataset.i], false);
   });
-  if (opts[0]) $('headline').value = opts[0];
 
   render();
   loadSuggestions(j.subjects || [], j.google_queries || [], sources);
@@ -1618,21 +1646,198 @@ async function copyCaption(silent){
   catch(_){ toast('Copy failed · long-press to copy'); }
 }
 
+// ---------- Headline editor (tap/select + Highlight, no stars) ----------
+const ed = $('headlineEd');
+const MK_A = '\uE000', MK_B = '\uE001';
+let headlineAuto = true, savedRange = null;
+
+// Read the editor into plain text + a per-character highlight mask
+function readEditor(){
+  let text = ''; const mask = [];
+  const push = (s, h) => { text += s; for (let i = 0; i < s.length; i++) mask.push(h); };
+  (function walk(node, hl){
+    node.childNodes.forEach(n => {
+      if (n.nodeType === 3) push(n.nodeValue.replace(/\u00A0/g, ' '), hl);
+      else if (n.nodeName === 'BR') push('\n', false);
+      else if (n.nodeType === 1){
+        if (/^(DIV|P)$/.test(n.nodeName) && text && !text.endsWith('\n')) push('\n', false);
+        walk(n, hl || n.classList.contains('hl'));
+      }
+    });
+  })(ed, false);
+  return { text, mask };
+}
+function wrapStars(t){ return t.replace(/^(\s*)([\s\S]*?)(\s*)$/, (m, a, b, c) => b ? `${a}*${b}*${c}` : m); }
+function modelToStars(m){          // internal format used by the image renderer
+  let out = '', i = 0;
+  while (i < m.text.length){
+    const h = m.mask[i]; let j = i;
+    while (j < m.text.length && m.mask[j] === h) j++;
+    const run = m.text.slice(i, j).replace(/\*/g, '');
+    out += h ? run.split('\n').map(wrapStars).join('\n') : run;
+    i = j;
+  }
+  return out;
+}
+function starsToModel(s){
+  let yellow = false, text = ''; const mask = [];
+  String(s || '').split(/(\*)/).forEach(p => {
+    if (p === '*'){ yellow = !yellow; return; }
+    text += p; for (let i = 0; i < p.length; i++) mask.push(yellow && p[i] !== '\n');
+  });
+  return { text, mask };
+}
+function modelToHTML(m){
+  let html = '', i = 0;
+  while (i < m.text.length){
+    const h = m.mask[i]; let j = i;
+    while (j < m.text.length && m.mask[j] === h) j++;
+    const e = esc(m.text.slice(i, j)).replace(/\n/g, '<br>');
+    html += h ? `<span class="hl">${e}</span>` : e;
+    i = j;
+  }
+  if (m.text.endsWith('\n')) html += '<br>';
+  return html;
+}
+function commitEditor(m){
+  ed.innerHTML = modelToHTML(m);
+  $('headline').value = modelToStars(m);
+  savedRange = null;
+  scheduleRender();
+}
+function setHeadline(starText, auto){
+  headlineAuto = !!auto;
+  commitEditor(starsToModel(starText));
+}
+
+ed.addEventListener('input', () => { headlineAuto = false; $('headline').value = modelToStars(readEditor()); scheduleRender(); });
+ed.addEventListener('paste', e => {
+  e.preventDefault();
+  const t = (e.clipboardData || window.clipboardData).getData('text/plain');
+  document.execCommand('insertText', false, t);
+});
+ed.addEventListener('keydown', e => { if (e.key === 'Tab'){ e.preventDefault(); document.execCommand('insertText', false, '\t'); } });
+document.addEventListener('selectionchange', () => {
+  const s = window.getSelection();
+  if (s.rangeCount && ed.contains(s.anchorNode)) savedRange = s.getRangeAt(0).cloneRange();
+});
+
+function selectionModel(){
+  if (!savedRange || !ed.contains(savedRange.startContainer)) return null;
+  const nb = document.createTextNode(MK_B), na = document.createTextNode(MK_A);
+  const r2 = savedRange.cloneRange(); r2.collapse(false); r2.insertNode(nb);
+  const r1 = savedRange.cloneRange(); r1.collapse(true); r1.insertNode(na);
+  const m = readEditor();
+  na.remove(); nb.remove();
+  const s = m.text.indexOf(MK_A); m.text = m.text.slice(0, s) + m.text.slice(s + 1); m.mask.splice(s, 1);
+  const e = m.text.indexOf(MK_B); m.text = m.text.slice(0, e) + m.text.slice(e + 1); m.mask.splice(e, 1);
+  return { m, s, e };
+}
+function placeCaret(off){
+  let count = 0, node = null, nOff = 0;
+  const walk = el => {
+    for (const n of el.childNodes){
+      if (node) return;
+      if (n.nodeType === 3){
+        const L = n.nodeValue.length;
+        if (count + L >= off){ node = n; nOff = off - count; return; }
+        count += L;
+      } else if (n.nodeName === 'BR'){
+        count += 1;
+        if (count === off){ node = n.parentNode; nOff = [...n.parentNode.childNodes].indexOf(n) + 1; return; }
+      } else walk(n);
+    }
+  };
+  walk(ed);
+  if (!node) return;
+  // If caret lands at the end of a highlighted word, move it outside so new typing isn't yellow
+  if (node.nodeType === 3 && nOff === node.nodeValue.length && node.parentNode.classList?.contains('hl')){
+    const span = node.parentNode; node = span.parentNode; nOff = [...node.childNodes].indexOf(span) + 1;
+  }
+  try{
+    const r = document.createRange(); r.setStart(node, nOff); r.collapse(true);
+    const sel = window.getSelection(); sel.removeAllRanges(); sel.addRange(r);
+    savedRange = r.cloneRange();
+  }catch(_){}
+}
+function toggleHighlight(){
+  const sm = selectionModel();
+  if (!sm){ toast('Tap a word in the headline first'); return; }
+  let { m, s, e } = sm;
+  if (s > e) [s, e] = [e, s];
+  if (s === e){                                     // just a tap → whole word
+    while (s > 0 && !/\s/.test(m.text[s - 1])) s--;
+    while (e < m.text.length && !/\s/.test(m.text[e])) e++;
+  }
+  while (s < e && /\s/.test(m.text[s])) s++;
+  while (e > s && /\s/.test(m.text[e - 1])) e--;
+  if (s === e){ toast('Tap a word in the headline first'); return; }
+  let allOn = true;
+  for (let i = s; i < e; i++) if (!/\s/.test(m.text[i]) && !m.mask[i]){ allOn = false; break; }
+  for (let i = s; i < e; i++) m.mask[i] = m.text[i] === '\n' ? false : !allOn;
+  headlineAuto = false;
+  commitEditor(m);
+  placeCaret(e);
+}
+function clearHighlights(){
+  const m = readEditor(); m.mask = m.mask.map(() => false);
+  commitEditor(m); toast('Highlights cleared');
+}
+
+// Editor highlight colour follows the Style tab colour
+function edColor(){ ed.style.setProperty('--hl', ts.hl); }
+const _syncSteppersOrig = syncSteppers;
+syncSteppers = function(){ _syncSteppersOrig(); edColor(); };
+$('hlColor').addEventListener('input', edColor);
+edColor();
+
+// Pasted news text goes straight onto the image (until you edit the headline yourself)
+function syncHeadlineFromNews(){
+  if (!headlineAuto && $('headline').value.trim()) return;
+  const t = cleanInput($('news').value).replace(/https?:\/\/\S+/g, '').replace(/\*/g, '').replace(/[ \t]+\n/g, '\n').trim();
+  setHeadline(t, true);
+}
+$('news').addEventListener('input', syncHeadlineFromNews);
+
+// ---------- In-app confirm ----------
+let cfAction = null;
+function askConfirm(title, text, okLabel, action){
+  $('cfTitle').textContent = title; $('cfText').textContent = text; $('cfOk').textContent = okLabel;
+  cfAction = action; $('confirmBox').classList.remove('hidden');
+}
+function closeConfirm(){ $('confirmBox').classList.add('hidden'); cfAction = null; }
+$('cfOk').onclick = () => { const a = cfAction; closeConfirm(); if (a) a(); };
+
 // ---------- New post (clear everything) ----------
 function newPost(){
-  const hasWork = $('news').value.trim() || $('caption').value.trim() || $('headline').value.trim() || photo;
-  if (hasWork && !confirm('Start a new post? This clears the text, images and caption.')) return;
-  $$('news').value = ''; $$('context').value = ''; $('xUrl').value = ''; xData = null;
-  $('xPreview').classList.add('hidden'); $('xStatus').textContent = '';
-  $('headline').value = ''; $('optBox').classList.add('hidden'); $('headlineOptions').innerHTML = '';
-  $('titleOn').checked = false; $('titleText').value = ''; $('titleBox').classList.add('hidden');
-  $('caption').value = ''; $('sourcesBox').classList.add('hidden'); $('sources').innerHTML = '';
-  $('suggestBox').classList.add('hidden'); $('imgGroups').innerHTML = ''; $('imgLinks').innerHTML = '';
-  allImgs = []; photo = null; ph = { s: 1, x: 0, y: 0 };
-  col.items = []; col.tree = null; col.layout = 0; col.gap = 0; col.color = '#FFFFFF';
+  const hasWork = ['news', 'context', 'caption', 'headline'].some(id => $(id) && $(id).value.trim()) || photo;
+  if (!hasWork){ doNewPost(); return; }
+  askConfirm('Start a new post?', 'This clears the news, context, headline, images and caption. Your keys and text style stay.', 'Clear all', doNewPost);
+}
+function doNewPost(){
+  const val  = id => { const el = $(id); if (el) el.value = ''; };
+  const hide = id => { const el = $(id); if (el) el.classList.add('hidden'); };
+  const html = id => { const el = $(id); if (el) el.innerHTML = ''; };
+  try{
+    ['news', 'context', 'xUrl', 'titleText', 'caption', 'photoFile', 'colFiles'].forEach(val);
+    xData = null;
+    const xs = $('xStatus'); if (xs){ xs.textContent = ''; xs.className = 'status'; }
+    hide('xPreview'); html('xImgs');
+    setHeadline('', true);
+    hide('optBox'); html('headlineOptions');
+    const tOn = $('titleOn'); if (tOn) tOn.checked = false; hide('titleBox');
+    hide('sourcesBox'); html('sources');
+    hide('suggestBox'); html('imgGroups'); html('imgLinks');
+    allImgs = []; photo = null; ph = { s: 1, x: 0, y: 0 };
+    col.items = []; col.tree = null; col.layout = 0; col.gap = 0; col.color = '#FFFFFF';
+  }catch(e){ console.warn('newPost:', e); }
   setStatus(''); setSource('text'); setMode('lock'); switchTab('news'); render();
+  window.scrollTo({ top: 0 });
   toast('Ready for a new post');
 }
+// Stop the browser from re-filling old text after a reload
+document.querySelectorAll('textarea, input[type=text], input[type=url]').forEach(el => el.setAttribute('autocomplete', 'off'));
+
 
 // ---------- Start ----------
 document.querySelectorAll('[data-icon]').forEach(el => el.insertAdjacentHTML('afterbegin', svg(el.dataset.icon)));
