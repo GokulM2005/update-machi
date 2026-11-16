@@ -151,8 +151,16 @@ input[type=color]{width:54px;height:36px;border:1px solid var(--line-2);border-r
 .editor:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(245,197,24,.12)}
 .editor:empty:before{content:attr(data-placeholder);color:var(--dim)}
 .editor .hl{color:var(--hl,#FFE01B);font-weight:700}
-.ed-tools{display:flex;gap:8px;margin-bottom:8px}
+.ed-tools{display:flex;gap:8px;margin-bottom:8px;align-items:center;justify-content:space-between}
 .ed-tools .btn{height:36px}
+.ed-wrap{position:relative}
+.editor.hlmode{cursor:pointer;user-select:none;-webkit-user-select:none}
+.editor .w{border-radius:4px;transition:background .12s}
+.editor.hlmode .w:active{background:rgba(255,255,255,.08)}
+.editor .w.sel{background:rgba(245,197,24,.16);box-shadow:0 0 0 2px rgba(245,197,24,.4)}
+.hlpop{position:absolute;z-index:5;transform:translateX(-50%);background:var(--surface-2);border:1px solid var(--line-2);border-radius:10px;padding:4px;box-shadow:0 8px 24px rgba(0,0,0,.5);white-space:nowrap}
+.hlpop button{border:none;border-radius:7px;padding:9px 16px;font-size:13px;font-weight:600;cursor:pointer;touch-action:manipulation;background:var(--accent);color:var(--ink)}
+.hlpop button.off{background:var(--surface);color:var(--text);border:1px solid var(--line-2)}
 </style>
 </head>
 <body>
@@ -241,12 +249,18 @@ input[type=color]{width:54px;height:36px;border:1px solid var(--line-2);border-r
     </div>
     <div class="sec">Headline</div>
     <div class="ed-tools">
-      <button class="btn btn-primary btn-sm" onmousedown="event.preventDefault()" onclick="toggleHighlight()">Highlight</button>
-      <button class="btn btn-secondary btn-sm" onmousedown="event.preventDefault()" onclick="clearHighlights()">Clear highlights</button>
+      <div class="seg" id="edModeSeg">
+        <button data-m="hl" class="active" onclick="setEdMode('hl')">Tap to highlight</button>
+        <button data-m="edit" onclick="setEdMode('edit')">Edit text</button>
+      </div>
+      <button class="btn btn-secondary btn-sm" onclick="clearHighlights()">Clear</button>
     </div>
-    <div id="headlineEd" class="editor" contenteditable="true" spellcheck="false" data-placeholder="Paste news in the News tab, or type here…"></div>
+    <div class="ed-wrap" id="edWrap">
+      <div id="headlineEd" class="editor hlmode" spellcheck="false" data-placeholder="Paste news in the News tab, or tap Edit text to type…"></div>
+      <div id="hlPop" class="hlpop hidden"><button id="hlPopBtn"></button></div>
+    </div>
     <textarea id="headline" class="hidden"></textarea>
-    <p class="hint">Tap a word (or select words) and press Highlight. Press again to remove. Enter starts a new line.</p>
+    <p class="hint" id="edHint">Tap any word to highlight or remove the highlight.</p>
     <div class="field-row" style="margin-top:6px">
       <span>Headlines title</span>
       <label class="switch"><input type="checkbox" id="titleOn" autocomplete="off"><span class="slider"></span></label>
@@ -1646,12 +1660,11 @@ async function copyCaption(silent){
   catch(_){ toast('Copy failed · long-press to copy'); }
 }
 
-// ---------- Headline editor (tap/select + Highlight, no stars) ----------
-const ed = $('headlineEd');
-const MK_A = '\uE000', MK_B = '\uE001';
-let headlineAuto = true, savedRange = null;
+// ---------- Headline editor (tap a word → Highlight / Remove) ----------
+const ed = $('headlineEd'), hlPop = $('hlPop'), hlPopBtn = $('hlPopBtn');
+let headlineAuto = true, edMode = 'hl', hModel = { text: '', mask: [] }, popWord = null;
 
-// Read the editor into plain text + a per-character highlight mask
+// Read the editable box into plain text + per-character highlight mask
 function readEditor(){
   let text = ''; const mask = [];
   const push = (s, h) => { text += s; for (let i = 0; i < s.length; i++) mask.push(h); };
@@ -1668,7 +1681,7 @@ function readEditor(){
   return { text, mask };
 }
 function wrapStars(t){ return t.replace(/^(\s*)([\s\S]*?)(\s*)$/, (m, a, b, c) => b ? `${a}*${b}*${c}` : m); }
-function modelToStars(m){          // internal format used by the image renderer
+function modelToStars(m){            // internal format used by the image renderer
   let out = '', i = 0;
   while (i < m.text.length){
     const h = m.mask[i]; let j = i;
@@ -1683,10 +1696,11 @@ function starsToModel(s){
   let yellow = false, text = ''; const mask = [];
   String(s || '').split(/(\*)/).forEach(p => {
     if (p === '*'){ yellow = !yellow; return; }
-    text += p; for (let i = 0; i < p.length; i++) mask.push(yellow && p[i] !== '\n');
+    text += p; for (let i = 0; i < p.length; i++) mask.push(yellow && !/\s/.test(p[i]));
   });
   return { text, mask };
 }
+// Edit mode HTML (continuous text)
 function modelToHTML(m){
   let html = '', i = 0;
   while (i < m.text.length){
@@ -1699,89 +1713,119 @@ function modelToHTML(m){
   if (m.text.endsWith('\n')) html += '<br>';
   return html;
 }
-function commitEditor(m){
-  ed.innerHTML = modelToHTML(m);
+// Highlight mode HTML (every word is a tappable chip)
+function modelToWordHTML(m){
+  const t = m.text; let html = '', i = 0;
+  while (i < t.length){
+    let j = i;
+    if (/\s/.test(t[i])){
+      while (j < t.length && /\s/.test(t[j])) j++;
+      html += esc(t.slice(i, j)).replace(/\n/g, '<br>');
+    } else {
+      while (j < t.length && !/\s/.test(t[j])) j++;
+      let on = true; for (let k = i; k < j; k++) if (!m.mask[k]){ on = false; break; }
+      html += `<span class="w${on ? ' hl' : ''}" data-s="${i}" data-e="${j}">${esc(t.slice(i, j))}</span>`;
+    }
+    i = j;
+  }
+  if (t.endsWith('\n')) html += '<br>';
+  return html;
+}
+function paint(){ ed.innerHTML = edMode === 'hl' ? modelToWordHTML(hModel) : modelToHTML(hModel); }
+function commitModel(m, repaint = true){
+  hModel = m;
   $('headline').value = modelToStars(m);
-  savedRange = null;
+  if (repaint) paint();
   scheduleRender();
 }
 function setHeadline(starText, auto){
   headlineAuto = !!auto;
-  commitEditor(starsToModel(starText));
+  hidePop();
+  commitModel(starsToModel(starText));
 }
 
-ed.addEventListener('input', () => { headlineAuto = false; $('headline').value = modelToStars(readEditor()); scheduleRender(); });
+// ----- Modes -----
+function setEdMode(m){
+  if (edMode === 'edit') hModel = readEditor();
+  edMode = m;
+  ed.contentEditable = m === 'edit' ? 'true' : 'false';
+  ed.classList.toggle('hlmode', m === 'hl');
+  document.querySelectorAll('#edModeSeg button').forEach(b => b.classList.toggle('active', b.dataset.m === m));
+  $('edHint').textContent = m === 'hl'
+    ? 'Tap any word to highlight or remove the highlight.'
+    : 'Type freely. Enter starts a new line. Switch back to highlight words.';
+  hidePop(); paint();
+  if (m === 'edit'){
+    ed.focus();
+    try{ const r = document.createRange(); r.selectNodeContents(ed); r.collapse(false); const s = getSelection(); s.removeAllRanges(); s.addRange(r); }catch(_){}
+  }
+}
+
+// ----- Edit mode typing -----
+ed.addEventListener('input', () => {
+  if (edMode !== 'edit') return;
+  headlineAuto = false;
+  hModel = readEditor();
+  $('headline').value = modelToStars(hModel);
+  scheduleRender();
+});
 ed.addEventListener('paste', e => {
+  if (edMode !== 'edit') return;
   e.preventDefault();
   const t = (e.clipboardData || window.clipboardData).getData('text/plain');
   document.execCommand('insertText', false, t);
 });
-ed.addEventListener('keydown', e => { if (e.key === 'Tab'){ e.preventDefault(); document.execCommand('insertText', false, '\t'); } });
-document.addEventListener('selectionchange', () => {
-  const s = window.getSelection();
-  if (s.rangeCount && ed.contains(s.anchorNode)) savedRange = s.getRangeAt(0).cloneRange();
+ed.addEventListener('keydown', e => {
+  if (edMode === 'edit' && e.key === 'Tab'){ e.preventDefault(); document.execCommand('insertText', false, '\t'); }
 });
 
-function selectionModel(){
-  if (!savedRange || !ed.contains(savedRange.startContainer)) return null;
-  const nb = document.createTextNode(MK_B), na = document.createTextNode(MK_A);
-  const r2 = savedRange.cloneRange(); r2.collapse(false); r2.insertNode(nb);
-  const r1 = savedRange.cloneRange(); r1.collapse(true); r1.insertNode(na);
-  const m = readEditor();
-  na.remove(); nb.remove();
-  const s = m.text.indexOf(MK_A); m.text = m.text.slice(0, s) + m.text.slice(s + 1); m.mask.splice(s, 1);
-  const e = m.text.indexOf(MK_B); m.text = m.text.slice(0, e) + m.text.slice(e + 1); m.mask.splice(e, 1);
-  return { m, s, e };
+// ----- Tap a word → popup -----
+function hidePop(){
+  hlPop.classList.add('hidden'); popWord = null;
+  ed.querySelectorAll('.w.sel').forEach(x => x.classList.remove('sel'));
 }
-function placeCaret(off){
-  let count = 0, node = null, nOff = 0;
-  const walk = el => {
-    for (const n of el.childNodes){
-      if (node) return;
-      if (n.nodeType === 3){
-        const L = n.nodeValue.length;
-        if (count + L >= off){ node = n; nOff = off - count; return; }
-        count += L;
-      } else if (n.nodeName === 'BR'){
-        count += 1;
-        if (count === off){ node = n.parentNode; nOff = [...n.parentNode.childNodes].indexOf(n) + 1; return; }
-      } else walk(n);
-    }
-  };
-  walk(ed);
-  if (!node) return;
-  // If caret lands at the end of a highlighted word, move it outside so new typing isn't yellow
-  if (node.nodeType === 3 && nOff === node.nodeValue.length && node.parentNode.classList?.contains('hl')){
-    const span = node.parentNode; node = span.parentNode; nOff = [...node.childNodes].indexOf(span) + 1;
-  }
-  try{
-    const r = document.createRange(); r.setStart(node, nOff); r.collapse(true);
-    const sel = window.getSelection(); sel.removeAllRanges(); sel.addRange(r);
-    savedRange = r.cloneRange();
-  }catch(_){}
+function showPop(w){
+  ed.querySelectorAll('.w.sel').forEach(x => x.classList.remove('sel'));
+  w.classList.add('sel');
+  const on = w.classList.contains('hl');
+  popWord = { s: +w.dataset.s, e: +w.dataset.e, on };
+  hlPopBtn.textContent = on ? 'Remove highlight' : 'Highlight';
+  hlPopBtn.className = on ? 'off' : '';
+  hlPop.classList.remove('hidden');
+  const wrap = $('edWrap').getBoundingClientRect(), r = w.getBoundingClientRect();
+  const pw = hlPop.offsetWidth, phh = hlPop.offsetHeight;
+  let left = r.left - wrap.left + r.width / 2;
+  left = clamp(left, pw / 2 + 4, wrap.width - pw / 2 - 4);
+  let top = r.top - wrap.top - phh - 8;
+  if (top < -4) top = r.bottom - wrap.top + 8;      // not enough room above → show below
+  hlPop.style.left = left + 'px';
+  hlPop.style.top = top + 'px';
 }
-function toggleHighlight(){
-  const sm = selectionModel();
-  if (!sm){ toast('Tap a word in the headline first'); return; }
-  let { m, s, e } = sm;
-  if (s > e) [s, e] = [e, s];
-  if (s === e){                                     // just a tap → whole word
-    while (s > 0 && !/\s/.test(m.text[s - 1])) s--;
-    while (e < m.text.length && !/\s/.test(m.text[e])) e++;
-  }
-  while (s < e && /\s/.test(m.text[s])) s++;
-  while (e > s && /\s/.test(m.text[e - 1])) e--;
-  if (s === e){ toast('Tap a word in the headline first'); return; }
-  let allOn = true;
-  for (let i = s; i < e; i++) if (!/\s/.test(m.text[i]) && !m.mask[i]){ allOn = false; break; }
-  for (let i = s; i < e; i++) m.mask[i] = m.text[i] === '\n' ? false : !allOn;
+ed.addEventListener('click', e => {
+  if (edMode !== 'hl') return;
+  const w = e.target.closest('.w');
+  if (!w){ hidePop(); return; }
+  if (popWord && popWord.s === +w.dataset.s && !hlPop.classList.contains('hidden')){ hidePop(); return; }
+  showPop(w);
+});
+hlPopBtn.addEventListener('click', e => {
+  e.stopPropagation();
+  if (!popWord) return;
+  const m = { text: hModel.text, mask: hModel.mask.slice() };
+  for (let i = popWord.s; i < popWord.e; i++) m.mask[i] = !popWord.on;
   headlineAuto = false;
-  commitEditor(m);
-  placeCaret(e);
-}
+  hidePop();
+  commitModel(m);
+});
+ed.addEventListener('scroll', hidePop);
+document.addEventListener('click', e => {
+  if (!hlPop.classList.contains('hidden') && !$('edWrap').contains(e.target)) hidePop();
+});
+
 function clearHighlights(){
-  const m = readEditor(); m.mask = m.mask.map(() => false);
-  commitEditor(m); toast('Highlights cleared');
+  const base = edMode === 'edit' ? readEditor() : hModel;
+  commitModel({ text: base.text, mask: base.mask.map(() => false) });
+  toast('Highlights cleared');
 }
 
 // Editor highlight colour follows the Style tab colour
@@ -1798,6 +1842,7 @@ function syncHeadlineFromNews(){
   setHeadline(t, true);
 }
 $('news').addEventListener('input', syncHeadlineFromNews);
+
 
 // ---------- In-app confirm ----------
 let cfAction = null;
